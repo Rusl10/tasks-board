@@ -1,66 +1,31 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Card } from './components/Card';
 import { nanoid } from 'nanoid';
 import './App.css';
 import * as React from 'react';
 import { useLatest } from './hooks/useLatest';
-import { getRandomInt, isIntersecting } from './utils/index';
-
-const ELEMENT_SIZE = 150;
+import { createRandomCoords, isIntersecting } from './utils/index';
 
 function App() {
+  console.log('App ender')
   const [coords, setCoords] = useState(() => [{
-    id: nanoid()
+    id: nanoid(),
+    ...createRandomCoords(),
+
   }]);
   const coordsRef = useLatest(coords);
-  const refCb = React.useCallback((element: HTMLElement | null  ) => {
-      if (element) {
-        const cardWidth = element.offsetWidth;
-        const cardHeight = element.offsetHeight;
-        const maxAllowedOffsetLeft = window.innerWidth - cardWidth;
-        const maxAllowedOffsetTop = window.innerHeight - cardHeight;
-        let randomOffsetLeft;
-        let randomOffsetTop;
-        const coordsObj = {}
-        do {
-          randomOffsetLeft = getRandomInt(maxAllowedOffsetLeft);
-          randomOffsetTop = getRandomInt(maxAllowedOffsetTop);
-          coordsObj.left = randomOffsetLeft;
-          coordsObj.right = randomOffsetLeft + ELEMENT_SIZE;
-          coordsObj.top = randomOffsetTop;
-          coordsObj.bottom = randomOffsetTop + ELEMENT_SIZE;
-        } while (isIntersecting(coordsRef.current, coordsObj));
-        setCoords((prev) => {
-          return prev.map((prevItem, idx) => {
-            if(idx === prev.length - 1) {
-              element.id = prevItem.id;
-              return {
-                ...prevItem,
-                ...coordsObj
-              }
-            }
-            return prevItem
-          })
-        })
-        element.style.left = randomOffsetLeft + 'px';
-        element.style.top = randomOffsetTop + 'px';
-      }
-    }, [coordsRef])
 
-  const dragEndHandler = React.useCallback((e: React.DragEvent<HTMLDivElement>) => {
+  const dragEndHandler = React.useCallback((id, e) => {
     const newCoordsObj = {
-      id: e.target.id,
-      left: e.nativeEvent.clientX -  e.target.offsetWidth / 2,
-      right: e.nativeEvent.clientX +  (e.target.offsetWidth / 2),
-      top: e.nativeEvent.clientY -  e.target.offsetWidth / 2,
-      bottom: e.nativeEvent.clientY +  (e.target.offsetWidth / 2),
+      id: id,
+      left: e.clientX -  e.target.offsetWidth / 2,
+      right: e.clientX +  (e.target.offsetWidth / 2),
+      top: e.clientY -  e.target.offsetWidth / 2,
+      bottom: e.clientY +  (e.target.offsetWidth / 2),
     }
     if (isIntersecting(coords, newCoordsObj)) return;
-    e.target.style.left = newCoordsObj.left + 'px';
-    e.target.style.top = newCoordsObj.top + 'px';
-    setCoords(prev => {
-      const updatedArr = prev.map((coord) => {
-      if (coord.id === e.target.id){
+    setCoords(prev => prev.map((coord) => {
+      if (coord.id === id){
         console.log('equals')
         return {
           ...coord,
@@ -71,24 +36,27 @@ function App() {
         }
       }
       return coord
-      })
-      return updatedArr
-    })
-  }, [coords])
-  const onAddNewCard = () => {
+    }))
+  }, [coordsRef])
+  const onAddNewCard = useCallback(() => {
+    let coordsObj;
+    do {
+      coordsObj = createRandomCoords();
+    } while (isIntersecting(coordsRef.current, coordsObj));
     setCoords(prev => {
       return [
         ...prev,
         {
-          id: nanoid()
+          id: nanoid(),
+          ...coordsObj
         }
       ]
     })
-  };
+  }, [coordsRef]);
 
-  const onRemoveHandler = (id) => {
+  const onRemoveHandler = useCallback((id) => {
     setCoords(prev => prev.filter((prevItem) => prevItem.id !== id))
-  }
+  }, [])
   return (
     <>
       <button onClick={onAddNewCard}>Добавить карточку</button>
@@ -97,8 +65,7 @@ function App() {
           return (
             <Card
               key={coord.id}
-              id={coord.id}
-              refCb={refCb} 
+              coord={coord}
               onDragEnd={dragEndHandler}
               onRemoveCard={onRemoveHandler}
             />

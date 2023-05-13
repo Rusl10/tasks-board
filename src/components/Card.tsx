@@ -1,28 +1,39 @@
 // import React from 'react';
-import { DragEventHandler, memo } from 'react';
+import { DragEvent, memo } from 'react';
 import './Card.css';
 
 interface ICardProps {
-  refCb: (element: HTMLElement | null) => void;
-  onDragEnd: DragEventHandler<HTMLDivElement>;
+  onDragEnd: (id: string, e: DragEvent) => void;
   onRemoveCard: (id: string) => void;
-  id: string;
+  coord: {
+    id: string;
+    top: number;
+    left: number;
+    right: number;
+    bottom: number;
+  }
 }
 
 export const Card = memo(({
-  refCb, 
   onDragEnd,
   onRemoveCard,
-  id
+  coord
 }: ICardProps): JSX.Element => {
   console.log('card render')
-  console.log('id', id)
+  const { 
+    left, 
+    top, 
+    id 
+  } = coord;
   return (
     <div 
       className='card' 
-      onDragEnd={onDragEnd}
+      onDragEnd={(e) => onDragEnd(id, e)}
       draggable 
-      ref={refCb}
+      style={{
+        top: top + 'px',
+        left: left + 'px',
+      }}
     >
       <p contentEditable>Введите текст...</p>
       <button onClick={() => onRemoveCard(id)}>remove</button>
