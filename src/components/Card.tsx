@@ -39,9 +39,12 @@ export const Card = memo(({
         zIndex: isActive ? 1000 : 0
       }}
       onMouseDown={(e) => onMouseDown(id, e, coord)}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        onRemoveCard(id);
+      }}
     >
       <p contentEditable={!isActive}>Введите текст...</p>
-      <button onClick={() => onRemoveCard(id)}>remove</button>
     </div>
   );
 });
