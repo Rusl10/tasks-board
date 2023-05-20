@@ -1,41 +1,46 @@
 // import React from 'react';
-import { DragEvent, memo } from 'react';
+import { memo, MouseEvent } from 'react';
 import './Card.css';
 
+interface ICoordObj {
+  isActive: boolean;
+  id: string;
+  top: number;
+  left: number;
+  right: number;
+  bottom: number;
+}
+
 interface ICardProps {
-  onDragEnd: (id: string, e: DragEvent) => void;
+  onMouseDown: (id: string, e: MouseEvent, cardCoords: ICoordObj) => void;
   onRemoveCard: (id: string) => void;
-  coord: {
-    id: string;
-    top: number;
-    left: number;
-    right: number;
-    bottom: number;
-  }
+  coord: ICoordObj
 }
 
 export const Card = memo(({
-  onDragEnd,
+  onMouseDown,
   onRemoveCard,
   coord
 }: ICardProps): JSX.Element => {
-  console.log('card render')
+  // console.log('card render')
   const { 
     left, 
     top, 
-    id 
+    id,
+    isActive
   } = coord;
   return (
     <div 
       className='card' 
-      onDragEnd={(e) => onDragEnd(id, e)}
-      draggable 
       style={{
         top: top + 'px',
         left: left + 'px',
+        // почему без этого карточка не будет вызываться onMouseUp
+        zIndex: isActive ? 1000 : 0
       }}
+      onMouseDown={(e) => onMouseDown(id, e, coord)}
     >
-      <p contentEditable>Введите текст...</p>
+      <p contentEditable={!isActive}>Введите текст...</p>
       <button onClick={() => onRemoveCard(id)}>remove</button>
     </div>
   );
