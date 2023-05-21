@@ -6,7 +6,6 @@ import { useLatest } from './hooks/useLatest';
 import { createRandomCoords, isIntersecting, newUserCoordsObj } from './utils/index';
 
 function App() {
-  // console.log('App ender')
   const [coords, setCoords] = useState(() => [{
     isActive: false,
     id: nanoid(),
@@ -45,9 +44,6 @@ function App() {
   const onMouseDownHandler = useCallback((id, event, cardCoords) => {
     const oldCardCoords = cardCoords;
     const cardElement = event.currentTarget;
-    console.log('cardElement', cardElement)
-    // Почему при таком поведении не срабатывает mouseDown 2й раз ???
-    // document.body.append(cardElement);
 
     let mouseMovePageX;
     let mouseMovePageY;
@@ -62,7 +58,6 @@ function App() {
 
     cardElement.onmouseup = function() {
       document.removeEventListener('mousemove', onMouseMove);
-      console.log('mouseMovePageX in mouseUp', mouseMovePageX)
       const newCoordsObj = newUserCoordsObj(mouseMovePageX, mouseMovePageY, id, false);
       // сетим координаты, только если карточка была сдвинута
       if (mouseMovePageX && mouseMovePageY) {
