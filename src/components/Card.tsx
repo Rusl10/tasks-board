@@ -31,7 +31,7 @@ export const Card = memo(({
   coord,
   changeCoordsArray
 }: ICardProps): JSX.Element => {
-  // console.log('card render')
+   console.log('card render')
   const { 
     left, 
     top, 
