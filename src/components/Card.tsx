@@ -5,7 +5,6 @@ import { newUserCoordsObj } from '../utils/index';
 import './Card.css';
 
 interface ICoordObj {
-  isActive: boolean;
   id: string;
   top: number;
   left: number;
@@ -19,7 +18,6 @@ const initialData = {
     right: 0,
     bottom: 0,
     id: '',
-    isActive: false
 }
 
 interface ICardProps {
@@ -38,7 +36,6 @@ export const Card = memo(({
     left, 
     top, 
     id,
-    isActive
   } = coord;
   const cardRef = useRef(null)
   const [temporaryCoords, setTemporaryCoords] = useState(initialData)
@@ -50,14 +47,13 @@ export const Card = memo(({
       const mouseMovePageX = event.pageX;
       const mouseMovePageY = event.pageY;
   
-      const newCoordsObj = newUserCoordsObj(mouseMovePageX, mouseMovePageY, id, true);
+      const newCoordsObj = newUserCoordsObj(mouseMovePageX, mouseMovePageY, id);
       setTemporaryCoords(newCoordsObj);
     }
 
     function onMouseUp() {
       // сетим координаты, только если карточка была сдвинута
     if (temporaryCoordsRef.current.id !== '') {
-      // maybe we have to set isActive to false
       changeCoordsArray(temporaryCoordsRef.current);
       setTemporaryCoords(initialData)
     }
@@ -81,9 +77,6 @@ export const Card = memo(({
       style={{
         top: temporaryCoords.top !== 0 ? (temporaryCoords.top + 'px') : top,
         left: temporaryCoords.left !== 0 ? (temporaryCoords.left + 'px') : left,
-        // почему без этого карточка не будет вызываться onMouseUp
-        // удалить эту логику
-        // zIndex: isActive ? 1000 : 0
       }}
       onMouseDown={(e) => onMouseDownHandler(e)}
       onContextMenu={(e) => {
@@ -91,7 +84,7 @@ export const Card = memo(({
         onRemoveCard(id);
       }}
     >
-      <p contentEditable={!isActive}>Введите текст...</p>
+      <p contentEditable>Введите текст...</p>
     </div>
   );
 });

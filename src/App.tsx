@@ -7,7 +7,6 @@ import { createRandomCoords, isIntersecting } from './utils/index';
 
 function App() {
   const [coords, setCoords] = useState(() => [{
-    isActive: false,
     id: nanoid(),
     ...createRandomCoords(),
 
@@ -23,7 +22,6 @@ function App() {
         ...prev,
         {
           id: nanoid(),
-          isActive: false,
           ...coordsObj
         }
       ]

@@ -6,10 +6,8 @@ export function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
 
-export function newUserCoordsObj(clientX, clientY, id, isActive) {
-  //console.log('clientX in newUserCoordsObj', clientX)
+export function newUserCoordsObj(clientX, clientY, id) {
   return {
-    isActive,
     id,
     left: clientX -  ELEMENT_SIZE / 2,
     right: clientX +  (ELEMENT_SIZE / 2),
