@@ -3,7 +3,7 @@ import { Card } from './components/Card';
 import { nanoid } from 'nanoid';
 import './App.css';
 import { useLatest } from './hooks/useLatest';
-import { createRandomCoords, isIntersecting, newUserCoordsObj } from './utils/index';
+import { createRandomCoords, isIntersecting } from './utils/index';
 
 function App() {
   const [coords, setCoords] = useState(() => [{
@@ -13,11 +13,11 @@ function App() {
 
   }]);
   const coordsRef = useLatest(coords);
-  const onAddNewCard = useCallback(() => {
+  const onAddNewCard = () => {
     let coordsObj;
     do {
       coordsObj = createRandomCoords();
-    } while (isIntersecting(coordsRef.current, coordsObj));
+    } while (isIntersecting(coords, coordsObj));
     setCoords(prev => {
       return [
         ...prev,
@@ -28,7 +28,7 @@ function App() {
         }
       ]
     })
-  }, [coordsRef]);
+  };
 
   function changeCoordsArray(newCoordsObj) {
     setCoords(prev => prev.map((coord) => {
@@ -41,35 +41,14 @@ function App() {
       return coord
     }))
   }
-  const onMouseDownHandler = useCallback((id, event, cardCoords) => {
-    const oldCardCoords = cardCoords;
-    const cardElement = event.currentTarget;
-
-    let mouseMovePageX;
-    let mouseMovePageY;
-    function onMouseMove(event: MouseEvent) {
-      mouseMovePageX = event.pageX;
-      mouseMovePageY = event.pageY;
-      const newCoordsObj = newUserCoordsObj(mouseMovePageX, mouseMovePageY, id, true);
-      changeCoordsArray(newCoordsObj);
+  
+  const checkIntersection = useCallback((temporaryCoords) => {
+    if (isIntersecting(coordsRef.current, temporaryCoords)) {
+      return false
+    } else {
+      changeCoordsArray(temporaryCoords)
+      return true
     }
-
-    document.addEventListener('mousemove', onMouseMove);
-
-    cardElement.onmouseup = function() {
-      document.removeEventListener('mousemove', onMouseMove);
-      const newCoordsObj = newUserCoordsObj(mouseMovePageX, mouseMovePageY, id, false);
-      // сетим координаты, только если карточка была сдвинута
-      if (mouseMovePageX && mouseMovePageY) {
-        // если есть пересечение с другими карточками, ставим карточку на прежнее место
-        if (isIntersecting(coordsRef.current, newCoordsObj)) {
-          changeCoordsArray(oldCardCoords)
-        } else {
-          changeCoordsArray(newCoordsObj);
-        }
-      }
-      cardElement.onmouseup = null;
-    };
   }, [coordsRef])
 
   const onRemoveHandler = useCallback((id) => {
@@ -84,8 +63,8 @@ function App() {
             <Card
               key={coord.id}
               coord={coord}
-              onMouseDown={onMouseDownHandler}
               onRemoveCard={onRemoveHandler}
+              changeCoordsArray={checkIntersection}
             />
           )
         })}
