@@ -37,7 +37,6 @@ export const Card = memo(({
     top, 
     id,
   } = coord;
-  const cardRef = useRef(null)
   const [temporaryCoords, setTemporaryCoords] = useState(initialData)
   const temporaryCoordsRef = useLatest(temporaryCoords);
   const [isPressed, setIsPressed] = useState(false);
@@ -73,10 +72,8 @@ export const Card = memo(({
   return (
     <div 
       className='card' 
-      ref={cardRef}
       style={{
-        top: temporaryCoords.top !== 0 ? (temporaryCoords.top + 'px') : top,
-        left: temporaryCoords.left !== 0 ? (temporaryCoords.left + 'px') : left,
+        transform: `translate(${temporaryCoords.left !== 0 ? temporaryCoords.left : left}px, ${temporaryCoords.top !== 0 ? temporaryCoords.top : top}px)`
       }}
       onMouseDown={(e) => onMouseDownHandler(e)}
       onContextMenu={(e) => {
