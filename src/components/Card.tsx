@@ -41,29 +41,15 @@ export const Card = memo(({
   const [{diffX, diffY}, setDiff] = useState({});
   const temporaryCoordsRef = useLatest(temporaryCoords);
   const [isPressed, setIsPressed] = useState(false);
-<<<<<<< Updated upstream
   useEffect(() => {
     if(!isPressed) return;
     function onMouseMove(event: MouseEvent) {
       const mouseMovePageX = event.pageX;
       const mouseMovePageY = event.pageY;
   
-      const newCoordsObj = newUserCoordsObj(mouseMovePageX, mouseMovePageY, id);
+      const newCoordsObj = newUserCoordsObj(mouseMovePageX, mouseMovePageY, diffX, diffY, id);
       setTemporaryCoords(newCoordsObj);
     }
-=======
-
-  const trottledFn = useRafThrottle(function onMouseMove(event: MouseEvent) {
-    const mouseMovePageX = event.pageX;
-    const mouseMovePageY = event.pageY;
-
-    const newCoordsObj = newUserCoordsObj(mouseMovePageX, mouseMovePageY, id);
-    setTemporaryCoords(newCoordsObj);
-  })
-  useEffect(() => {
-    if(!isPressed) return;
-    
->>>>>>> Stashed changes
 
     function onMouseUp() {
       // сетим координаты, только если карточка была сдвинута

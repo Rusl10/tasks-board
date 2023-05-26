@@ -6,13 +6,15 @@ export function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
 
-export function newUserCoordsObj(clientX, clientY, id) {
+export function newUserCoordsObj(mouseMovePageX, mouseMovePageY, diffX, diffY, id) {
+  const calcLeftFromDiff = mouseMovePageX -  diffX;
+  const calcTopFromDiff = mouseMovePageY -  diffY;
   return {
     id,
-    left: clientX -  ELEMENT_SIZE / 2,
-    right: clientX +  (ELEMENT_SIZE / 2),
-    top: clientY -  ELEMENT_SIZE / 2,
-    bottom: clientY +  (ELEMENT_SIZE / 2),
+    left: calcLeftFromDiff,
+    right: calcLeftFromDiff +  ELEMENT_SIZE,
+    top: calcTopFromDiff,
+    bottom: calcTopFromDiff +  ELEMENT_SIZE,
   }
 }
 
