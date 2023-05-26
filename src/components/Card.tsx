@@ -1,6 +1,7 @@
 // import React from 'react';
-import { memo, MouseEvent, useEffect, useRef, useState } from 'react';
+import { memo, MouseEvent, useEffect, useState } from 'react';
 import { useLatest } from '../hooks/useLatest';
+import { useRafThrottle } from '../hooks/useRafThrottle';
 import { newUserCoordsObj } from '../utils/index';
 import './Card.css';
 
@@ -41,15 +42,17 @@ export const Card = memo(({
   const [{diffX, diffY}, setDiff] = useState({});
   const temporaryCoordsRef = useLatest(temporaryCoords);
   const [isPressed, setIsPressed] = useState(false);
-  useEffect(() => {
-    if(!isPressed) return;
-    function onMouseMove(event: MouseEvent) {
+
+  const trottledFn = useRafThrottle(function onMouseMove(event: MouseEvent) {
       const mouseMovePageX = event.pageX;
       const mouseMovePageY = event.pageY;
   
       const newCoordsObj = newUserCoordsObj(mouseMovePageX, mouseMovePageY, diffX, diffY, id);
       setTemporaryCoords(newCoordsObj);
-    }
+    })
+  useEffect(() => {
+    if(!isPressed) return;
+    
 
     function onMouseUp() {
       // сетим координаты, только если карточка была сдвинута
@@ -60,10 +63,10 @@ export const Card = memo(({
       setIsPressed(false);
     }
   
-    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mousemove', trottledFn);
     document.addEventListener('mouseup', onMouseUp);
     return () => {
-      document.removeEventListener('mousemove', onMouseMove)
+      document.removeEventListener('mousemove', trottledFn)
       document.removeEventListener('mouseup', onMouseUp);
     }
   }, [isPressed])
