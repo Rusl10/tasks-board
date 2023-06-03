@@ -40,14 +40,9 @@ function App() {
     }))
   }
   
-  const checkIntersection = useCallback((temporaryCoords) => {
-    if (isIntersecting(coordsRef.current, temporaryCoords)) {
-      return false
-    } else {
+  const changeCoordsArrayCb = useCallback((temporaryCoords) => {
       changeCoordsArray(temporaryCoords)
-      return true
-    }
-  }, [coordsRef])
+  }, [])
 
   const onRemoveHandler = useCallback((id) => {
     setCoords(prev => prev.filter((prevItem) => prevItem.id !== id))
@@ -63,7 +58,7 @@ function App() {
               key={coord.id}
               coord={coord}
               onRemoveCard={onRemoveHandler}
-              changeCoordsArray={checkIntersection}
+              changeCoordsArray={changeCoordsArrayCb}
             />
           )
         })}

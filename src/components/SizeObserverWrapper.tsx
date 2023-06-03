@@ -1,15 +1,15 @@
-import { useCallback, useRef } from 'react';
+import { memo, useCallback, useRef } from 'react';
 import { Card } from './Card';
 import { SizeObserver } from './SizeObserver';
 
-export function SizeObserverWrapper({coord, onRemoveCard, changeCoordsArray}) {
+export const SizeObserverWrapper = memo(({coord, onRemoveCard, changeCoordsArray}) => {
   const cardRef = useRef(null);
   const resizeCb = useCallback((entries: ResizeObserverEntry[]) => {
     changeCoordsArray({
       ...coord,
       bottom: coord.top + entries[0].borderBoxSize[0].blockSize
     })
-  }, [coord])
+  }, [coord.bottom])
   return (
     <SizeObserver 
       nodeRef={cardRef} 
@@ -28,4 +28,4 @@ export function SizeObserverWrapper({coord, onRemoveCard, changeCoordsArray}) {
       }}
     </SizeObserver>
   )
-}
+})
