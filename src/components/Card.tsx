@@ -1,5 +1,5 @@
 // import React from 'react';
-import { memo, MouseEvent, useEffect, useState } from 'react';
+import { memo, MouseEvent, RefObject, useEffect, useState } from 'react';
 import { useLatest } from '../hooks/useLatest';
 import { useRafThrottle } from '../hooks/useRafThrottle';
 import { newUserCoordsObj } from '../utils/index';
@@ -25,11 +25,13 @@ interface ICardProps {
   onRemoveCard: (id: string) => void;
   coord: ICoordObj,
   changeCoordsArray: (cardCoords: ICoordObj) => boolean;
+  elementRef: RefObject<HTMLDivElement>;
 }
 
 export const Card = memo(({
   onRemoveCard,
   coord,
+  elementRef,
   changeCoordsArray
 }: ICardProps): JSX.Element => {
    console.log('card render')
@@ -53,13 +55,12 @@ export const Card = memo(({
   useEffect(() => {
     if(!isPressed) return;
     
-
     function onMouseUp() {
       // сетим координаты, только если карточка была сдвинута
-    if (temporaryCoordsRef.current.id !== '') {
-      changeCoordsArray(temporaryCoordsRef.current);
-      setTemporaryCoords(initialData)
-    }
+      if (temporaryCoordsRef.current.id !== '') {
+        changeCoordsArray(temporaryCoordsRef.current);
+        setTemporaryCoords(initialData)
+      }
       setIsPressed(false);
     }
   
@@ -73,19 +74,20 @@ export const Card = memo(({
   const onMouseDownHandler = (event) => {
     const diffX =  event.pageX - left;
     const diffY = event.pageY - top;
-    console.log(diffX, 'diffX');
     setDiff({
       diffX,
       diffY
     })
     setIsPressed(true);
   };
+
   return (
     <div 
       className='card' 
       style={{
         transform: `translate(${temporaryCoords.left !== 0 ? temporaryCoords.left : left}px, ${temporaryCoords.top !== 0 ? temporaryCoords.top : top}px)`
       }}
+      ref={elementRef}
       onMouseDown={(e) => onMouseDownHandler(e)}
       onContextMenu={(e) => {
         e.preventDefault();

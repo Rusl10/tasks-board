@@ -1,9 +1,9 @@
 import { useState, useCallback } from 'react';
-import { Card } from './components/Card';
 import { nanoid } from 'nanoid';
 import './App.css';
 import { useLatest } from './hooks/useLatest';
 import { createRandomCoords, isIntersecting } from './utils/index';
+import { SizeObserverWrapper } from './components/SizeObserverWrapper';
 
 function App() {
   const [coords, setCoords] = useState(() => [{
@@ -52,13 +52,14 @@ function App() {
   const onRemoveHandler = useCallback((id) => {
     setCoords(prev => prev.filter((prevItem) => prevItem.id !== id))
   }, [])
+
   return (
     <>
       <button onClick={onAddNewCard}>Добавить карточку</button>
       <div className='cards-wrapper'>
         {coords.map((coord) => {
           return (
-            <Card
+            <SizeObserverWrapper 
               key={coord.id}
               coord={coord}
               onRemoveCard={onRemoveHandler}
