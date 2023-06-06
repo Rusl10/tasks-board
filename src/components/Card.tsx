@@ -73,6 +73,7 @@ export const Card = memo(({
       document.removeEventListener('mouseup', handleMouseUp);
     }
     const handleMouseDown = (event) => {
+      if (event.which == 2) return;
       offset.x =  event.pageX - coordLatestRef.current.left;
       offset.y = event.pageY - coordLatestRef.current.top;
 
