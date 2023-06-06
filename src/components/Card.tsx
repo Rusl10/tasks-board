@@ -1,9 +1,10 @@
 // import React from 'react';
-import { memo, MouseEvent, RefObject, useEffect, useState } from 'react';
+import { memo, RefObject, useEffect, useRef, useState } from 'react';
 import { useLatest } from '../hooks/useLatest';
-import { useRafThrottle } from '../hooks/useRafThrottle';
 import { newUserCoordsObj } from '../utils/index';
 import './Card.css';
+import { rafThrottle } from '../utils/index';
+import { useCombinedRef } from '../hooks/useCombinedRef';
 
 interface ICoordObj {
   id: string;
@@ -40,46 +41,52 @@ export const Card = memo(({
     top, 
     id,
   } = coord;
-  const [temporaryCoords, setTemporaryCoords] = useState(initialData)
-  const [{diffX, diffY}, setDiff] = useState({});
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const [temporaryCoords, setTemporaryCoords] = useState(initialData);
+  const coordLatestRef = useLatest(coord)
+  const combinedRef = useCombinedRef(cardRef, elementRef)
   const temporaryCoordsRef = useLatest(temporaryCoords);
-  const [isPressed, setIsPressed] = useState(false);
+  useEffect(() => {
+    const cardEl = cardRef.current;
 
-  const trottledFn = useRafThrottle(function onMouseMove(event: MouseEvent) {
+    if (!cardEl) return;
+    
+    const offset = {
+      x: 0,
+      y: 0,
+    };
+    
+    const handleMouseMove = rafThrottle((event) => {
+
       const mouseMovePageX = event.pageX;
       const mouseMovePageY = event.pageY;
-  
-      const newCoordsObj = newUserCoordsObj(mouseMovePageX, mouseMovePageY, diffX, diffY, id);
+      const newCoordsObj = newUserCoordsObj(mouseMovePageX, mouseMovePageY, offset.x, offset.y, id);
       setTemporaryCoords(newCoordsObj);
     })
-  useEffect(() => {
-    if(!isPressed) return;
-    
-    function onMouseUp() {
+    const handleMouseUp = () => {
       // сетим координаты, только если карточка была сдвинута
       if (temporaryCoordsRef.current.id !== '') {
         changeCoordsArray(temporaryCoordsRef.current);
-        setTemporaryCoords(initialData)
+        setTemporaryCoords(initialData);
       }
-      setIsPressed(false);
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp);
     }
-  
-    document.addEventListener('mousemove', trottledFn);
-    document.addEventListener('mouseup', onMouseUp);
+    const handleMouseDown = (event) => {
+      offset.x =  event.pageX - coordLatestRef.current.left;
+      offset.y = event.pageY - coordLatestRef.current.top;
+
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    cardEl.addEventListener('mousedown', handleMouseDown)
     return () => {
-      document.removeEventListener('mousemove', trottledFn)
-      document.removeEventListener('mouseup', onMouseUp);
+      cardEl.removeEventListener('mousedown', handleMouseDown)
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp);
     }
-  }, [isPressed])
-  const onMouseDownHandler = (event) => {
-    const diffX =  event.pageX - left;
-    const diffY = event.pageY - top;
-    setDiff({
-      diffX,
-      diffY
-    })
-    setIsPressed(true);
-  };
+  }, [coord.id])
 
   return (
     <div 
@@ -87,8 +94,7 @@ export const Card = memo(({
       style={{
         transform: `translate(${temporaryCoords.left !== 0 ? temporaryCoords.left : left}px, ${temporaryCoords.top !== 0 ? temporaryCoords.top : top}px)`
       }}
-      ref={elementRef}
-      onMouseDown={(e) => onMouseDownHandler(e)}
+      ref={combinedRef}
       onContextMenu={(e) => {
         e.preventDefault();
         onRemoveCard(id);
