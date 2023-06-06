@@ -88,11 +88,13 @@ export const Card = memo(({
     }
   }, [coord.id])
 
+  const actualLeftCoords = temporaryCoords.left || left;
+  const actualTopCoords = temporaryCoords.top || top;
   return (
     <div 
       className='card' 
       style={{
-        transform: `translate(${temporaryCoords.left !== 0 ? temporaryCoords.left : left}px, ${temporaryCoords.top !== 0 ? temporaryCoords.top : top}px)`
+        transform: `translate(${actualLeftCoords}px, ${actualTopCoords}px)`
       }}
       ref={combinedRef}
       onContextMenu={(e) => {
