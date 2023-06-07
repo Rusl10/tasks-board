@@ -1,30 +1,29 @@
-import { useCallback, useRef } from "react";
+import { useRef } from "react";
+import { useEvent } from "./useEvent";
 
 export function useResizeObserver(onResize: ResizeObserverCallback) {
   const roRef = useRef<ResizeObserver | null>(null);
 
-  const attachResizeObserver = useCallback(
+  const attachResizeObserver = useEvent(
     (element: HTMLElement) => {
       const resizeObserver = new ResizeObserver(onResize);
       resizeObserver.observe(element);
       roRef.current = resizeObserver;
-    },
-    [onResize]
+    }
   );
 
-  const detachResizeObserver = useCallback(() => {
+  const detachResizeObserver = useEvent(() => {
     roRef.current?.disconnect();
-  }, []);
+  });
 
-  const refCb = useCallback(
+  const refCb = useEvent(
     (element: HTMLElement | null) => {
       if (element) {
         attachResizeObserver(element);
       } else {
         detachResizeObserver();
       }
-    },
-    [attachResizeObserver, detachResizeObserver]
+    }
   );
 
   return refCb;

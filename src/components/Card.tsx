@@ -103,7 +103,7 @@ export const Card = memo(({
         onRemoveCard(id);
       }}
     >
-      <p contentEditable>Введите текст...</p>
+      <p suppressContentEditableWarning contentEditable>Введите текст...</p>
     </div>
   );
 });
