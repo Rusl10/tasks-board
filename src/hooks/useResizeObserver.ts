@@ -13,6 +13,7 @@ export function useResizeObserver(onResize: ResizeObserverCallback) {
   );
 
   const detachResizeObserver = useEvent(() => {
+    console.log('detachResizeObserver')
     roRef.current?.disconnect();
   });
 

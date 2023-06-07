@@ -3,11 +3,10 @@ import { useResizeObserver } from "../hooks/useResizeObserver";
 
 export function SizeObserver({
   onResize,
-  children,
-  nodeRef
+  children
 }) {
   const resizeRef = useResizeObserver(onResize);
-  const combinedRef = useCombinedRef(nodeRef, resizeRef);
+  const combinedRef = useCombinedRef(resizeRef);
 
   return children(combinedRef);
 }
