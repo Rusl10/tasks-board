@@ -3,7 +3,7 @@ import { Card } from './Card';
 import { SizeObserver } from './SizeObserver';
 import { useEvent } from "../hooks/useEvent";
 
-export const SizeObserverWrapper = memo(({coord, onRemoveCard, changeCoordsArray}) => {
+export const CardWrapper = memo(({coord, onRemoveCard, changeCoordsArray}) => {
   const resizeCb = useEvent((entries: ResizeObserverEntry[]) => {
     console.log('resizeCb')
     changeCoordsArray({

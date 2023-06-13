@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid';
 import './App.css';
 import { useLatest } from './hooks/useLatest';
 import { createRandomCoords, isIntersecting } from './utils/index';
-import { SizeObserverWrapper } from './components/SizeObserverWrapper';
+import { CardWrapper } from './components/CardWrapper';
 
 function App() {
   const [coords, setCoords] = useState(() => [{
@@ -54,7 +54,7 @@ function App() {
       <div className='cards-wrapper'>
         {coords.map((coord) => {
           return (
-            <SizeObserverWrapper 
+            <CardWrapper 
               key={coord.id}
               coord={coord}
               onRemoveCard={onRemoveHandler}
