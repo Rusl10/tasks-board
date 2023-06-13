@@ -15,11 +15,12 @@ export const SizeObserverWrapper = memo(({coord, onRemoveCard, changeCoordsArray
     <SizeObserver 
       onResize={resizeCb}
     >
-      {(ref) => {
+      {(attachRO, detachRO) => {
         return (
           <Card
             key={coord.id}
-            elementRef={ref}
+            attachRO={attachRO}
+            detachRO={detachRO}
             coord={coord}
             onRemoveCard={onRemoveCard}
             changeCoordsArray={changeCoordsArray}

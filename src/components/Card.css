@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 15px;
   word-break: break-word;
   border: 2px solid grey;
@@ -13,4 +13,8 @@
   position: absolute;
   z-index: 1;
   box-sizing: border-box;
+}
+
+input {
+  width: 100%;
 }

@@ -1,10 +1,9 @@
 // import React from 'react';
-import { memo, RefObject, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { useLatest } from '../hooks/useLatest';
 import { newUserCoordsObj } from '../utils/index';
 import './Card.css';
 import { rafThrottle } from '../utils/index';
-import { useCombinedRef } from '../hooks/useCombinedRef';
 
 interface ICoordObj {
   id: string;
@@ -26,25 +25,28 @@ interface ICardProps {
   onRemoveCard: (id: string) => void;
   coord: ICoordObj,
   changeCoordsArray: (cardCoords: ICoordObj) => boolean;
-  elementRef: RefObject<HTMLDivElement>;
+  //elementRef: RefObject<HTMLDivElement>;
+  attachRO: (element: HTMLElement) => void;
+  detachRO: () => void;
 }
 
 export const Card = memo(({
   onRemoveCard,
   coord,
-  elementRef,
-  changeCoordsArray
+  changeCoordsArray,
+  attachRO,
+  detachRO
 }: ICardProps): JSX.Element => {
-   console.log('card render')
+   //console.log('card render')
   const { 
     left, 
     top, 
     id,
   } = coord;
+  const [isFocused, setIsFocused] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const [temporaryCoords, setTemporaryCoords] = useState(initialData);
   const coordLatestRef = useLatest(coord)
-  const combinedRef = useCombinedRef(cardRef, elementRef)
   const temporaryCoordsRef = useLatest(temporaryCoords);
   useEffect(() => {
     const cardEl = cardRef.current;
@@ -73,6 +75,7 @@ export const Card = memo(({
       document.removeEventListener('mouseup', handleMouseUp);
     }
     const handleMouseDown = (event) => {
+      //event.preventDefault();
       if (event.which == 2) return;
       offset.x =  event.pageX - coordLatestRef.current.left;
       offset.y = event.pageY - coordLatestRef.current.top;
@@ -89,6 +92,13 @@ export const Card = memo(({
     }
   }, [coord.id])
 
+  useEffect(() => {
+    if (!isFocused || !cardRef?.current) return;
+    attachRO(cardRef.current);
+    return () => {
+      detachRO();
+    }
+  }, [isFocused])
   const actualLeftCoords = temporaryCoords.left || left;
   const actualTopCoords = temporaryCoords.top || top;
   return (
@@ -97,13 +107,20 @@ export const Card = memo(({
       style={{
         transform: `translate(${actualLeftCoords}px, ${actualTopCoords}px)`
       }}
-      ref={combinedRef}
+      ref={cardRef}
       onContextMenu={(e) => {
         e.preventDefault();
         onRemoveCard(id);
       }}
     >
-      <p suppressContentEditableWarning contentEditable>Введите текст...</p>
+      <input 
+        type='text'
+        onFocus={() => setIsFocused(true)}
+        onMouseMove={(e) => {
+          e.stopPropagation();
+        }}
+        onBlur={() => setIsFocused(false)}
+      />
     </div>
   );
 });

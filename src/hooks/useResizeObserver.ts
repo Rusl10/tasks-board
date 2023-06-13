@@ -27,5 +27,5 @@ export function useResizeObserver(onResize: ResizeObserverCallback) {
     }
   );
 
-  return refCb;
+  return {refCb, attachResizeObserver, detachResizeObserver};
 }
