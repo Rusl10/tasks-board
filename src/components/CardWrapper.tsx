@@ -8,6 +8,7 @@ export const CardWrapper = memo(({coord, onRemoveCard, changeCoordsArray}) => {
     console.log('resizeCb')
     changeCoordsArray({
       ...coord,
+      height: entries[0].borderBoxSize[0].blockSize,
       bottom: coord.top + entries[0].borderBoxSize[0].blockSize
     })
   })

@@ -11,6 +11,7 @@ interface ICoordObj {
   left: number;
   right: number;
   bottom: number;
+  height: number;
 }
 
 const initialData = {
@@ -18,6 +19,7 @@ const initialData = {
     left: 0,
     right: 0,
     bottom: 0,
+    height: 0,
     id: '',
 }
 
@@ -42,7 +44,7 @@ export const Card = memo(({
    //console.log('card render')
   const { 
     left, 
-    top, 
+    top,
     id,
   } = coord;
   const [text, setText] = useState('');
@@ -66,7 +68,7 @@ export const Card = memo(({
 
       const mouseMovePageX = event.pageX;
       const mouseMovePageY = event.pageY;
-      const newCoordsObj = newUserCoordsObj(mouseMovePageX, mouseMovePageY, offset.x, offset.y, id);
+      const newCoordsObj = newUserCoordsObj(mouseMovePageX, mouseMovePageY, offset.x, offset.y, id, coordLatestRef.current.height);
       setTemporaryCoords(newCoordsObj);
     })
     const handleMouseUp = () => {

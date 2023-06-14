@@ -1,20 +1,21 @@
-export const ELEMENT_SIZE = 150;
-export const MAX_ALLOWED_OFFSET_LEFT = window.innerWidth - ELEMENT_SIZE;
-export const MAX_ALLOWED_OFFSET_TOP = window.innerHeight - ELEMENT_SIZE;
+export const DEFAULT_ELEMENT_SIZE = 150;
+export const MAX_ALLOWED_OFFSET_LEFT = window.innerWidth - DEFAULT_ELEMENT_SIZE;
+export const MAX_ALLOWED_OFFSET_TOP = window.innerHeight - DEFAULT_ELEMENT_SIZE;
 
 export function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
 
-export function newUserCoordsObj(mouseMovePageX, mouseMovePageY, diffX, diffY, id) {
+export function newUserCoordsObj(mouseMovePageX, mouseMovePageY, diffX, diffY, id, height) {
   const calcLeftFromDiff = mouseMovePageX -  diffX;
   const calcTopFromDiff = mouseMovePageY -  diffY;
   return {
     id,
+    height,
     left: calcLeftFromDiff,
-    right: calcLeftFromDiff +  ELEMENT_SIZE,
+    right: calcLeftFromDiff +  DEFAULT_ELEMENT_SIZE,
     top: calcTopFromDiff,
-    bottom: calcTopFromDiff +  ELEMENT_SIZE,
+    bottom: calcTopFromDiff + height,
   }
 }
 
@@ -23,9 +24,10 @@ export function createRandomCoords() {
   const randomOffsetTop = getRandomInt(MAX_ALLOWED_OFFSET_TOP);
   return {
     left: randomOffsetLeft,
-    right: randomOffsetLeft + ELEMENT_SIZE,
+    right: randomOffsetLeft + DEFAULT_ELEMENT_SIZE,
     top: randomOffsetTop,
-    bottom: randomOffsetTop + ELEMENT_SIZE,
+    bottom: randomOffsetTop + DEFAULT_ELEMENT_SIZE,
+    height: DEFAULT_ELEMENT_SIZE
   }
 }
 

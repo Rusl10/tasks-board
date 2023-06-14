@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import { nanoid } from 'nanoid';
 import './App.css';
-import { useLatest } from './hooks/useLatest';
 import { createRandomCoords, isIntersecting } from './utils/index';
 import { CardWrapper } from './components/CardWrapper';
 
@@ -11,7 +10,6 @@ function App() {
     ...createRandomCoords(),
 
   }]);
-  const coordsRef = useLatest(coords);
   const onAddNewCard = () => {
     let coordsObj;
     do {
