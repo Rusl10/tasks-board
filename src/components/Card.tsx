@@ -1,5 +1,5 @@
 // import React from 'react';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLatest } from '../hooks/useLatest';
 import { newUserCoordsObj } from '../utils/index';
 import './Card.css';
@@ -20,6 +20,8 @@ const initialData = {
     bottom: 0,
     id: '',
 }
+
+const MIN_TEXTAREA_HEIGHT = 32;
 
 interface ICardProps {
   onRemoveCard: (id: string) => void;
@@ -43,10 +45,12 @@ export const Card = memo(({
     top, 
     id,
   } = coord;
+  const [text, setText] = useState('');
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const [temporaryCoords, setTemporaryCoords] = useState(initialData);
-  const coordLatestRef = useLatest(coord)
+  const coordLatestRef = useLatest(coord);
   const temporaryCoordsRef = useLatest(temporaryCoords);
   useEffect(() => {
     const cardEl = cardRef.current;
@@ -99,6 +103,16 @@ export const Card = memo(({
       detachRO();
     }
   }, [isFocused])
+
+  useLayoutEffect(() => {
+    if(!textAreaRef?.current) return;
+    textAreaRef.current.style.height = 'inherit';
+
+    textAreaRef.current.style.height = `${Math.max(
+      textAreaRef.current.scrollHeight,
+      MIN_TEXTAREA_HEIGHT
+    )}px`;
+  }, [text])
   const actualLeftCoords = temporaryCoords.left || left;
   const actualTopCoords = temporaryCoords.top || top;
   return (
@@ -113,14 +127,24 @@ export const Card = memo(({
         onRemoveCard(id);
       }}
     >
-      <input 
-        type='text'
+      <textarea 
         onFocus={() => setIsFocused(true)}
+        onMouseDown={(e) => {
+          e.stopPropagation();
+        }}
+        ref={textAreaRef}
         onMouseMove={(e) => {
           e.stopPropagation();
         }}
         onBlur={() => setIsFocused(false)}
-      />
+        value={text}
+        style={{minHeight: MIN_TEXTAREA_HEIGHT}}
+        onChange={(e) => {
+          const target = e.target;
+          setText(target.value);
+
+        }}
+      ></textarea>
     </div>
   );
 });
