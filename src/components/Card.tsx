@@ -3,6 +3,7 @@ import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLatest } from '../hooks/useLatest';
 import { rafThrottle, DEFAULT_ELEMENT_SIZE } from '../utils/index';
 import './Card.css';
+import { useEvent } from '../hooks/useEvent';
 
 interface ICard {
   id: string;
@@ -27,18 +28,18 @@ const MIN_TEXTAREA_HEIGHT = 32;
 interface ICardProps {
   onRemoveCard: (id: string) => void;
   cardData: ICard,
-  changeCardsArray: (cardData: ICard) => boolean;
+  changeCardsArray: (cardData: ICard) => void;
   //elementRef: RefObject<HTMLDivElement>;
-  attachRO: (element: HTMLElement) => void;
-  detachRO: () => void;
+  // attachRO: (element: HTMLElement) => void;
+  // detachRO: () => void;
 }
 
 export const Card = memo(({
   onRemoveCard,
   cardData,
   changeCardsArray,
-  attachRO,
-  detachRO
+  // attachRO,
+  // detachRO
 }: ICardProps): JSX.Element => {
    //console.log('card render')
   const { 
@@ -105,9 +106,18 @@ export const Card = memo(({
 
   useEffect(() => {
     if (!isFocused || !cardRef?.current) return;
-    attachRO(cardRef.current);
+    const resizeCb = (entries: ResizeObserverEntry[]) => {
+      console.log('resizeCb')
+      changeCardsArray({
+        ...cardData,
+        height: entries[0].borderBoxSize[0].blockSize,
+        bottom: cardData.top + entries[0].borderBoxSize[0].blockSize
+      })
+    }
+    const resizeObserver = new ResizeObserver(resizeCb);
+    resizeObserver.observe(cardRef.current)
     return () => {
-      detachRO();
+      resizeObserver.disconnect();
     }
   }, [isFocused])
 

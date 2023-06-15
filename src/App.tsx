@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { nanoid } from 'nanoid';
 import './App.css';
 import { createNewCard, isIntersecting } from './utils/index';
-import { CardWrapper } from './components/CardWrapper';
+import { Card } from './components/Card';
 
 function App() {
   const [cards, setCards] = useState(() => [{
@@ -52,7 +52,7 @@ function App() {
       <div className='cards-wrapper'>
         {cards.map((cardItem) => {
           return (
-            <CardWrapper 
+            <Card
               key={cardItem.id}
               cardData={cardItem}
               onRemoveCard={onRemoveHandler}
