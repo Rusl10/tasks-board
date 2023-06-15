@@ -6,19 +6,6 @@ export function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
 
-export function newUserCoordsObj(mouseMovePageX, mouseMovePageY, diffX, diffY, id, height) {
-  const calcLeftFromDiff = mouseMovePageX -  diffX;
-  const calcTopFromDiff = mouseMovePageY -  diffY;
-  return {
-    id,
-    height,
-    left: calcLeftFromDiff,
-    right: calcLeftFromDiff +  DEFAULT_ELEMENT_SIZE,
-    top: calcTopFromDiff,
-    bottom: calcTopFromDiff + height,
-  }
-}
-
 export function createRandomCoords() {
   const randomOffsetLeft = getRandomInt(MAX_ALLOWED_OFFSET_LEFT);
   const randomOffsetTop = getRandomInt(MAX_ALLOWED_OFFSET_TOP);

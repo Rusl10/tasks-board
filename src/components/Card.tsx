@@ -1,9 +1,8 @@
 // import React from 'react';
 import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLatest } from '../hooks/useLatest';
-import { newUserCoordsObj } from '../utils/index';
+import { rafThrottle, DEFAULT_ELEMENT_SIZE } from '../utils/index';
 import './Card.css';
-import { rafThrottle } from '../utils/index';
 
 interface ICoordObj {
   id: string;
@@ -67,7 +66,16 @@ export const Card = memo(({
     const handleMouseMove = rafThrottle((event: MouseEvent) => {
       const mouseMovePageX = event.pageX;
       const mouseMovePageY = event.pageY;
-      const newCoordsObj = newUserCoordsObj(mouseMovePageX, mouseMovePageY, offset.x, offset.y, id, coordLatestRef.current.height);
+      const calcLeftFromOffset = mouseMovePageX -  offset.x;
+      const calcTopFromOffset = mouseMovePageY -  offset.y;
+      const newCoordsObj = {
+        id,
+        height: coordLatestRef.current.height,
+        left: calcLeftFromOffset,
+        right: calcLeftFromOffset +  DEFAULT_ELEMENT_SIZE,
+        top: calcTopFromOffset,
+        bottom: calcTopFromOffset + coordLatestRef.current.height,
+      }
       setTemporaryCoords(newCoordsObj);
     })
     const handleMouseUp = () => {
