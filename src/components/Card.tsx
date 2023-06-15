@@ -5,32 +5,18 @@ import { rafThrottle, DEFAULT_ELEMENT_SIZE } from '../utils/index';
 import './Card.css';
 import { ICard } from '../types';
 
-const initialData = {
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: 0,
-    id: '',
-}
-
 const MIN_TEXTAREA_HEIGHT = 32;
 
 interface ICardProps {
   onRemoveCard: (id: string) => void;
   cardData: ICard,
   changeCardsArray: (cardData: ICard) => void;
-  //elementRef: RefObject<HTMLDivElement>;
-  // attachRO: (element: HTMLElement) => void;
-  // detachRO: () => void;
 }
 
 export const Card = memo(({
   onRemoveCard,
   cardData,
   changeCardsArray,
-  // attachRO,
-  // detachRO
 }: ICardProps): JSX.Element => {
    //console.log('card render')
   const { 
@@ -42,7 +28,7 @@ export const Card = memo(({
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
-  const [tempCardData, setTempCardData] = useState(initialData);
+  const [tempCardData, setTempCardData] = useState<ICard | null>(null);
   const cardLatestDataRef = useLatest(cardData);
   const latestTempCardDataRef = useLatest(tempCardData);
   useEffect(() => {
@@ -72,9 +58,9 @@ export const Card = memo(({
     })
     const handleMouseUp = () => {
       // сетим координаты, только если карточка была сдвинута
-      if (latestTempCardDataRef.current.id !== '') {
+      if (latestTempCardDataRef.current) {
         changeCardsArray(latestTempCardDataRef.current);
-        setTempCardData(initialData);
+        setTempCardData(null);
       }
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp);
@@ -121,8 +107,8 @@ export const Card = memo(({
       MIN_TEXTAREA_HEIGHT
     )}px`;
   }, [text])
-  const actualLeftCoords = tempCardData.left || left;
-  const actualTopCoords = tempCardData.top || top;
+  const actualLeftCoords = tempCardData?.left || left;
+  const actualTopCoords = tempCardData?.top || top;
   return (
     <div 
       className='card' 
