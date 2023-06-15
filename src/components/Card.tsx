@@ -82,7 +82,7 @@ export const Card = memo(({
   }, [cardData.id])
 
   useEffect(() => {
-    if (!isFocused || !cardRef?.current) return;
+    if (!isFocused || !cardRef.current) return;
     const resizeCb = (entries: ResizeObserverEntry[]) => {
       console.log('resizeCb')
       changeCardsArray({
@@ -99,7 +99,7 @@ export const Card = memo(({
   }, [isFocused])
 
   useLayoutEffect(() => {
-    if(!textAreaRef?.current) return;
+    if(!textAreaRef.current) return;
     textAreaRef.current.style.height = 'inherit';
 
     textAreaRef.current.style.height = `${Math.max(
