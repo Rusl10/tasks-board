@@ -4,7 +4,7 @@ import { useLatest } from '../hooks/useLatest';
 import { rafThrottle, DEFAULT_ELEMENT_SIZE } from '../utils/index';
 import './Card.css';
 
-interface ICoordObj {
+interface ICard {
   id: string;
   top: number;
   left: number;
@@ -26,8 +26,8 @@ const MIN_TEXTAREA_HEIGHT = 32;
 
 interface ICardProps {
   onRemoveCard: (id: string) => void;
-  coord: ICoordObj,
-  changeCoordsArray: (cardCoords: ICoordObj) => boolean;
+  cardData: ICard,
+  changeCardsArray: (cardData: ICard) => boolean;
   //elementRef: RefObject<HTMLDivElement>;
   attachRO: (element: HTMLElement) => void;
   detachRO: () => void;
@@ -35,8 +35,8 @@ interface ICardProps {
 
 export const Card = memo(({
   onRemoveCard,
-  coord,
-  changeCoordsArray,
+  cardData,
+  changeCardsArray,
   attachRO,
   detachRO
 }: ICardProps): JSX.Element => {
@@ -45,14 +45,14 @@ export const Card = memo(({
     left, 
     top,
     id,
-  } = coord;
+  } = cardData;
   const [text, setText] = useState('');
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
-  const [temporaryCoords, setTemporaryCoords] = useState(initialData);
-  const coordLatestRef = useLatest(coord);
-  const temporaryCoordsRef = useLatest(temporaryCoords);
+  const [tempCardData, setTempCardData] = useState(initialData);
+  const cardLatestDataRef = useLatest(cardData);
+  const latestTempCardDataRef = useLatest(tempCardData);
   useEffect(() => {
     const cardEl = cardRef.current;
 
@@ -68,21 +68,21 @@ export const Card = memo(({
       const mouseMovePageY = event.pageY;
       const calcLeftFromOffset = mouseMovePageX -  offset.x;
       const calcTopFromOffset = mouseMovePageY -  offset.y;
-      const newCoordsObj = {
+      const newCardData = {
         id,
-        height: coordLatestRef.current.height,
+        height: cardLatestDataRef.current.height,
         left: calcLeftFromOffset,
         right: calcLeftFromOffset +  DEFAULT_ELEMENT_SIZE,
         top: calcTopFromOffset,
-        bottom: calcTopFromOffset + coordLatestRef.current.height,
+        bottom: calcTopFromOffset + cardLatestDataRef.current.height,
       }
-      setTemporaryCoords(newCoordsObj);
+      setTempCardData(newCardData);
     })
     const handleMouseUp = () => {
       // сетим координаты, только если карточка была сдвинута
-      if (temporaryCoordsRef.current.id !== '') {
-        changeCoordsArray(temporaryCoordsRef.current);
-        setTemporaryCoords(initialData);
+      if (latestTempCardDataRef.current.id !== '') {
+        changeCardsArray(latestTempCardDataRef.current);
+        setTempCardData(initialData);
       }
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp);
@@ -101,7 +101,7 @@ export const Card = memo(({
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp);
     }
-  }, [coord.id])
+  }, [cardData.id])
 
   useEffect(() => {
     if (!isFocused || !cardRef?.current) return;
@@ -120,8 +120,8 @@ export const Card = memo(({
       MIN_TEXTAREA_HEIGHT
     )}px`;
   }, [text])
-  const actualLeftCoords = temporaryCoords.left || left;
-  const actualTopCoords = temporaryCoords.top || top;
+  const actualLeftCoords = tempCardData.left || left;
+  const actualTopCoords = tempCardData.top || top;
   return (
     <div 
       className='card' 

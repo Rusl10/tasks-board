@@ -6,7 +6,7 @@ export function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
 
-export function createRandomCoords() {
+export function createNewCard() {
   const randomOffsetLeft = getRandomInt(MAX_ALLOWED_OFFSET_LEFT);
   const randomOffsetTop = getRandomInt(MAX_ALLOWED_OFFSET_TOP);
   return {
@@ -18,13 +18,13 @@ export function createRandomCoords() {
   }
 }
 
-export function isIntersecting(coords, newElCoords) {
-  const result = coords.some((coord) => {
-    return coord.id !== newElCoords.id && (
-      coord.bottom > newElCoords.top 
-    && coord.right > newElCoords.left 
-    && coord.top < newElCoords.bottom 
-    && coord.left < newElCoords.right
+export function isIntersecting(cards, newCard) {
+  const result = cards.some((card) => {
+    return card.id !== newCard.id && (
+      card.bottom > newCard.top 
+    && card.right > newCard.left 
+    && card.top < newCard.bottom 
+    && card.left < newCard.right
   ); 
   });
   return result;

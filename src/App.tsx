@@ -1,62 +1,62 @@
 import { useState, useCallback } from 'react';
 import { nanoid } from 'nanoid';
 import './App.css';
-import { createRandomCoords, isIntersecting } from './utils/index';
+import { createNewCard, isIntersecting } from './utils/index';
 import { CardWrapper } from './components/CardWrapper';
 
 function App() {
-  const [coords, setCoords] = useState(() => [{
+  const [cards, setCards] = useState(() => [{
     id: nanoid(),
-    ...createRandomCoords(),
+    ...createNewCard(),
 
   }]);
   const onAddNewCard = () => {
-    let coordsObj;
+    let newCard;
     do {
-      coordsObj = createRandomCoords();
-    } while (isIntersecting(coords, coordsObj));
-    setCoords(prev => {
+      newCard = createNewCard();
+    } while (isIntersecting(cards, newCard));
+    setCards(prev => {
       return [
         ...prev,
         {
           id: nanoid(),
-          ...coordsObj
+          ...newCard
         }
       ]
     })
   };
 
-  function changeCoordsArray(newCoordsObj) {
-    setCoords(prev => prev.map((coord) => {
-      if (coord.id === newCoordsObj.id){
+  function changeCardsArray(modifiedCardData) {
+    setCards(prev => prev.map((card) => {
+      if (card.id === modifiedCardData.id){
         return {
-          ...coord,
-          ...newCoordsObj,
+          ...card,
+          ...modifiedCardData,
         }
       }
-      return coord
+      return card
     }))
   }
-  
-  const changeCoordsArrayCb = useCallback((temporaryCoords) => {
-      changeCoordsArray(temporaryCoords)
+  // get rid of changeCardsArrayCb, pass changeCardsArray
+  const changeCardsArrayCb = useCallback((modifiedCardData) => {
+      changeCardsArray(modifiedCardData)
   }, [])
 
   const onRemoveHandler = useCallback((id) => {
-    setCoords(prev => prev.filter((prevItem) => prevItem.id !== id))
+    setCards(prev => prev.filter((prevItem) => prevItem.id !== id))
   }, [])
 
   return (
     <>
       <button onClick={onAddNewCard}>Добавить карточку</button>
       <div className='cards-wrapper'>
-        {coords.map((coord) => {
+        {cards.map((cardItem) => {
           return (
             <CardWrapper 
-              key={coord.id}
-              coord={coord}
+              key={cardItem.id}
+              cardData={cardItem}
               onRemoveCard={onRemoveHandler}
-              changeCoordsArray={changeCoordsArrayCb}
+              changeCardsArray={changeCardsArrayCb}
             />
           )
         })}
