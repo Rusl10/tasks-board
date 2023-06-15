@@ -5,7 +5,7 @@ import { createNewCard, isIntersecting } from './utils/index';
 import { Card } from './components/Card';
 import { ICard } from './types';
 
-function App() {
+export const App = () => {
   const [cards, setCards] = useState(() => [{
     id: nanoid(),
     ...createNewCard(),
@@ -27,7 +27,7 @@ function App() {
     })
   };
 
-  function changeCardsArray(modifiedCardData: ICard) {
+  const changeCardsArray = (modifiedCardData: ICard) => {
     setCards(prev => prev.map((card) => {
       if (card.id === modifiedCardData.id){
         return {
@@ -65,5 +65,3 @@ function App() {
     </>
   )
 }
-
-export default App
