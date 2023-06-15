@@ -64,8 +64,7 @@ export const Card = memo(({
       y: 0,
     };
     
-    const handleMouseMove = rafThrottle((event) => {
-
+    const handleMouseMove = rafThrottle((event: MouseEvent) => {
       const mouseMovePageX = event.pageX;
       const mouseMovePageY = event.pageY;
       const newCoordsObj = newUserCoordsObj(mouseMovePageX, mouseMovePageY, offset.x, offset.y, id, coordLatestRef.current.height);
@@ -80,12 +79,10 @@ export const Card = memo(({
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp);
     }
-    const handleMouseDown = (event) => {
-      //event.preventDefault();
-      if (event.which == 2) return;
-      offset.x =  event.pageX - coordLatestRef.current.left;
-      offset.y = event.pageY - coordLatestRef.current.top;
-
+    const handleMouseDown = (event: MouseEvent) => {
+      if (event.button > 0) return;
+      offset.x =  event.offsetX;
+      offset.y = event.offsetY;
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
     }
