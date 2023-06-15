@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid';
 import './App.css';
 import { createNewCard, isIntersecting } from './utils/index';
 import { Card } from './components/Card';
+import { ICard } from './types';
 
 function App() {
   const [cards, setCards] = useState(() => [{
@@ -26,7 +27,7 @@ function App() {
     })
   };
 
-  function changeCardsArray(modifiedCardData) {
+  function changeCardsArray(modifiedCardData: ICard) {
     setCards(prev => prev.map((card) => {
       if (card.id === modifiedCardData.id){
         return {
@@ -38,7 +39,7 @@ function App() {
     }))
   }
   // get rid of changeCardsArrayCb, pass changeCardsArray
-  const changeCardsArrayCb = useCallback((modifiedCardData) => {
+  const changeCardsArrayCb = useCallback((modifiedCardData: ICard) => {
       changeCardsArray(modifiedCardData)
   }, [])
 

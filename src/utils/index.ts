@@ -1,3 +1,5 @@
+import { ICard } from "../types";
+
 export const DEFAULT_ELEMENT_SIZE = 150;
 export const MAX_ALLOWED_OFFSET_LEFT = window.innerWidth - DEFAULT_ELEMENT_SIZE;
 export const MAX_ALLOWED_OFFSET_TOP = window.innerHeight - DEFAULT_ELEMENT_SIZE;
@@ -18,7 +20,7 @@ export function createNewCard() {
   }
 }
 
-export function isIntersecting(cards, newCard) {
+export function isIntersecting(cards: ICard[], newCard: ICard) {
   const result = cards.some((card) => {
     return card.id !== newCard.id && (
       card.bottom > newCard.top 

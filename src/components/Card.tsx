@@ -3,16 +3,7 @@ import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLatest } from '../hooks/useLatest';
 import { rafThrottle, DEFAULT_ELEMENT_SIZE } from '../utils/index';
 import './Card.css';
-import { useEvent } from '../hooks/useEvent';
-
-interface ICard {
-  id: string;
-  top: number;
-  left: number;
-  right: number;
-  bottom: number;
-  height: number;
-}
+import { ICard } from '../types';
 
 const initialData = {
     top: 0,
