@@ -1,7 +1,7 @@
 // import React from 'react';
 import { ChangeEvent, memo, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLatest } from '../hooks/useLatest';
-import { rafThrottle, DEFAULT_ELEMENT_SIZE } from '../utils/index';
+import { rafThrottle } from '../utils/index';
 import './Card.css';
 import { ICard } from '../types';
 
@@ -47,13 +47,9 @@ export const Card = memo(({
       const calcLeftFromOffset = mouseMovePageX -  offset.x;
       const calcTopFromOffset = mouseMovePageY -  offset.y;
       const newCardData = {
-        text,
-        id,
-        height: cardLatestDataRef.current.height,
+        ...cardLatestDataRef.current,
         left: calcLeftFromOffset,
-        right: calcLeftFromOffset +  DEFAULT_ELEMENT_SIZE,
         top: calcTopFromOffset,
-        bottom: calcTopFromOffset + cardLatestDataRef.current.height,
       }
       setTempCardData(newCardData);
     })
@@ -85,11 +81,10 @@ export const Card = memo(({
   useEffect(() => {
     if (!isFocused || !cardRef.current) return;
     const resizeCb = (entries: ResizeObserverEntry[]) => {
-      console.log('resizeCb')
       changeCardsArray({
         ...cardData,
+        text: cardLatestDataRef.current.text,
         height: entries[0].borderBoxSize[0].blockSize,
-        bottom: cardData.top + entries[0].borderBoxSize[0].blockSize
       })
     }
     const resizeObserver = new ResizeObserver(resizeCb);

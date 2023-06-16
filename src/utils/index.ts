@@ -16,20 +16,19 @@ export function createNewCard() {
     text: '',
     id: nanoid(),
     left: randomOffsetLeft,
-    right: randomOffsetLeft + DEFAULT_ELEMENT_SIZE,
     top: randomOffsetTop,
-    bottom: randomOffsetTop + DEFAULT_ELEMENT_SIZE,
-    height: DEFAULT_ELEMENT_SIZE
+    height: DEFAULT_ELEMENT_SIZE,
+    width: DEFAULT_ELEMENT_SIZE
   }
 }
 
 export function isIntersecting(cards: ICard[], newCard: ICard) {
   const result = cards.some((card) => {
     return card.id !== newCard.id && (
-      card.bottom > newCard.top 
-    && card.right > newCard.left 
-    && card.top < newCard.bottom 
-    && card.left < newCard.right
+      (card.top + card.height) > newCard.top 
+    && (card.left + card.width) > newCard.left 
+    && card.top < (newCard.top + newCard.height) 
+    && card.left < (newCard.left + newCard.width)
   ); 
   });
   return result;
