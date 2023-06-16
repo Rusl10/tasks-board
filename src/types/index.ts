@@ -5,4 +5,5 @@ export interface ICard {
     right: number;
     bottom: number;
     height: number;
+    text: string;
   }

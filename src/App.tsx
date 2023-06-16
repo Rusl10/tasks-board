@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import { nanoid } from 'nanoid';
 import './App.css';
 import { createNewCard, isIntersecting } from './utils/index';
 import { Card } from './components/Card';
@@ -7,7 +6,6 @@ import { ICard } from './types';
 
 export const App = () => {
   const [cards, setCards] = useState(() => [{
-    id: nanoid(),
     ...createNewCard(),
 
   }]);
@@ -20,7 +18,6 @@ export const App = () => {
       return [
         ...prev,
         {
-          id: nanoid(),
           ...newCard
         }
       ]

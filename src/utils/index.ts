@@ -1,4 +1,5 @@
 import { ICard } from "../types";
+import { nanoid } from 'nanoid';
 
 export const DEFAULT_ELEMENT_SIZE = 150;
 export const MAX_ALLOWED_OFFSET_LEFT = window.innerWidth - DEFAULT_ELEMENT_SIZE;
@@ -12,6 +13,8 @@ export function createNewCard() {
   const randomOffsetLeft = getRandomInt(MAX_ALLOWED_OFFSET_LEFT);
   const randomOffsetTop = getRandomInt(MAX_ALLOWED_OFFSET_TOP);
   return {
+    text: '',
+    id: nanoid(),
     left: randomOffsetLeft,
     right: randomOffsetLeft + DEFAULT_ELEMENT_SIZE,
     top: randomOffsetTop,

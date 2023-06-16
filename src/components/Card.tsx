@@ -1,5 +1,5 @@
 // import React from 'react';
-import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { ChangeEvent, memo, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLatest } from '../hooks/useLatest';
 import { rafThrottle, DEFAULT_ELEMENT_SIZE } from '../utils/index';
 import './Card.css';
@@ -23,8 +23,8 @@ export const Card = memo(({
     left, 
     top,
     id,
+    text
   } = cardData;
-  const [text, setText] = useState('');
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -47,6 +47,7 @@ export const Card = memo(({
       const calcLeftFromOffset = mouseMovePageX -  offset.x;
       const calcTopFromOffset = mouseMovePageY -  offset.y;
       const newCardData = {
+        text,
         id,
         height: cardLatestDataRef.current.height,
         left: calcLeftFromOffset,
@@ -107,6 +108,14 @@ export const Card = memo(({
       MIN_TEXTAREA_HEIGHT
     )}px`;
   }, [text])
+
+  const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    changeCardsArray({
+      ...cardData,
+      text: e.target.value
+    })
+  }
+
   const actualLeftCoords = tempCardData?.left || left;
   const actualTopCoords = tempCardData?.top || top;
   return (
@@ -133,11 +142,7 @@ export const Card = memo(({
         onBlur={() => setIsFocused(false)}
         value={text}
         style={{minHeight: MIN_TEXTAREA_HEIGHT}}
-        onChange={(e) => {
-          const target = e.target;
-          setText(target.value);
-
-        }}
+        onChange={handleTextareaChange}
       ></textarea>
     </div>
   );
