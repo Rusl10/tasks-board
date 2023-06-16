@@ -1,4 +1,4 @@
-import { ICard } from "../types";
+import { ICard } from '../types';
 import { nanoid } from 'nanoid';
 
 export const DEFAULT_ELEMENT_SIZE = 150;
@@ -18,18 +18,19 @@ export function createNewCard() {
     left: randomOffsetLeft,
     top: randomOffsetTop,
     height: DEFAULT_ELEMENT_SIZE,
-    width: DEFAULT_ELEMENT_SIZE
-  }
+    width: DEFAULT_ELEMENT_SIZE,
+  };
 }
 
 export function isIntersecting(cards: ICard[], newCard: ICard) {
   const result = cards.some((card) => {
-    return card.id !== newCard.id && (
-      (card.top + card.height) > newCard.top 
-    && (card.left + card.width) > newCard.left 
-    && card.top < (newCard.top + newCard.height) 
-    && card.left < (newCard.left + newCard.width)
-  ); 
+    return (
+      card.id !== newCard.id &&
+      card.top + card.height > newCard.top &&
+      card.left + card.width > newCard.left &&
+      card.top < newCard.top + newCard.height &&
+      card.left < newCard.left + newCard.width
+    );
   });
   return result;
 }
@@ -38,7 +39,7 @@ export function rafThrottle<T extends (...args: any[]) => any>(fn: T) {
   let rafId: number | null = null;
 
   function throttled(...args: Parameters<T>) {
-    if (typeof rafId === "number") {
+    if (typeof rafId === 'number') {
       //console.log("cancel");
       return;
     }
@@ -50,7 +51,7 @@ export function rafThrottle<T extends (...args: any[]) => any>(fn: T) {
   }
 
   throttled.cancel = () => {
-    if (typeof rafId !== "number") {
+    if (typeof rafId !== 'number') {
       return;
     }
     cancelAnimationFrame(rafId);

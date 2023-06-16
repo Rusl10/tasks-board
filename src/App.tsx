@@ -5,49 +5,52 @@ import { Card } from './components/Card';
 import { ICard } from './types';
 
 export const App = () => {
-  const [cards, setCards] = useState(() => [{
-    ...createNewCard(),
-
-  }]);
+  const [cards, setCards] = useState(() => [
+    {
+      ...createNewCard(),
+    },
+  ]);
   const onAddNewCard = () => {
     let newCard;
     do {
       newCard = createNewCard();
     } while (isIntersecting(cards, newCard));
-    setCards(prev => {
+    setCards((prev) => {
       return [
         ...prev,
         {
-          ...newCard
-        }
-      ]
-    })
+          ...newCard,
+        },
+      ];
+    });
   };
 
   const changeCardsArray = (modifiedCardData: ICard) => {
-    setCards(prev => prev.map((card) => {
-      if (card.id === modifiedCardData.id){
-        return {
-          ...card,
-          ...modifiedCardData,
+    setCards((prev) =>
+      prev.map((card) => {
+        if (card.id === modifiedCardData.id) {
+          return {
+            ...card,
+            ...modifiedCardData,
+          };
         }
-      }
-      return card
-    }))
-  }
+        return card;
+      })
+    );
+  };
   // get rid of changeCardsArrayCb, pass changeCardsArray
   const changeCardsArrayCb = useCallback((modifiedCardData: ICard) => {
-      changeCardsArray(modifiedCardData)
-  }, [])
+    changeCardsArray(modifiedCardData);
+  }, []);
 
   const onRemoveHandler = useCallback((id) => {
-    setCards(prev => prev.filter((prevItem) => prevItem.id !== id))
-  }, [])
+    setCards((prev) => prev.filter((prevItem) => prevItem.id !== id));
+  }, []);
 
   return (
     <>
       <button onClick={onAddNewCard}>Добавить карточку</button>
-      <div className='cards-wrapper'>
+      <div className="cards-wrapper">
         {cards.map((cardItem) => {
           return (
             <Card
@@ -56,9 +59,9 @@ export const App = () => {
               onRemoveCard={onRemoveHandler}
               changeCardsArray={changeCardsArrayCb}
             />
-          )
+          );
         })}
       </div>
     </>
-  )
-}
+  );
+};

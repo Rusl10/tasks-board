@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useRef } from "react";
+import { useCallback, useLayoutEffect, useRef } from 'react';
 
 export function useEvent<T extends Function>(fn: T) {
   const fnRef = useRef(fn);
