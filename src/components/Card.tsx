@@ -82,7 +82,6 @@ export const Card = memo(
       const resizeCb = (entries: ResizeObserverEntry[]) => {
         changeCardsArray({
           ...cardData,
-          text: cardLatestDataRef.current.text,
           height: entries[0].borderBoxSize[0].blockSize,
         });
       };
