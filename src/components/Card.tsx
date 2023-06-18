@@ -11,6 +11,7 @@ import { useLatest } from '../hooks/useLatest';
 import { rafThrottle } from '../utils/index';
 import './Card.css';
 import { ICard } from '../types';
+import { registerCallback } from '../utils/sizeObserver';
 
 const MIN_TEXTAREA_HEIGHT = 32;
 
@@ -78,18 +79,18 @@ export const Card = memo(
     }, [cardData.id]);
 
     useEffect(() => {
-      if (!isFocused || !cardRef.current) return;
-      const resizeCb = (entries: ResizeObserverEntry[]) => {
+      const cardEl = cardRef.current;
+      if (!isFocused || !cardEl) return;
+      return registerCallback(cardEl, (entry) => {
+        console.log('entry', entry);
         changeCardsArray({
           ...cardData,
-          height: entries[0].borderBoxSize[0].blockSize,
+          top: cardLatestDataRef.current.top,
+          left: cardLatestDataRef.current.left,
+          text: cardLatestDataRef.current.text,
+          height: entry.borderBoxSize[0].blockSize,
         });
-      };
-      const resizeObserver = new ResizeObserver(resizeCb);
-      resizeObserver.observe(cardRef.current);
-      return () => {
-        resizeObserver.disconnect();
-      };
+      });
     }, [isFocused]);
 
     useLayoutEffect(() => {
