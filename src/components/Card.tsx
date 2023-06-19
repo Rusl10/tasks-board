@@ -24,7 +24,7 @@ interface ICardProps {
 export const Card = memo(
   ({ onRemoveCard, cardData, changeCardsArray }: ICardProps): JSX.Element => {
     //console.log('card render')
-    const { left, top, id, text } = cardData;
+    const { left, top, id } = cardData;
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const [isFocused, setIsFocused] = useState(false);
     const cardRef = useRef<HTMLDivElement | null>(null);
@@ -85,12 +85,8 @@ export const Card = memo(
       const cardEl = cardRef.current;
       if (!isFocused || !cardEl) return;
       return registerCallback(cardEl, (entry) => {
-        console.log('entry', entry);
-        changeCardsArray({
-          ...cardData,
-          top: cardLatestDataRef.current.top,
-          left: cardLatestDataRef.current.left,
-          text: cardLatestDataRef.current.text,
+        setTempCardData({
+          ...latestTempCardDataRef.current,
           height: entry.borderBoxSize[0].blockSize,
         });
       });
@@ -107,11 +103,14 @@ export const Card = memo(
     }, [tempCardData.text]);
 
     const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-      setTempCardData({ ...cardLatestDataRef.current, text: e.target.value });
+      setTempCardData({
+        ...latestTempCardDataRef.current,
+        text: e.target.value,
+      });
     };
 
     const handleTextAreaBlur = () => {
-      changeCardsArray(tempCardData);
+      changeCardsArray(latestTempCardDataRef.current);
       setIsFocused(false);
     };
 
