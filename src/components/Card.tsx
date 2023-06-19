@@ -28,7 +28,7 @@ export const Card = memo(
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const [isFocused, setIsFocused] = useState(false);
     const cardRef = useRef<HTMLDivElement | null>(null);
-    const [tempCardData, setTempCardData] = useState<ICard | null>(null);
+    const [tempCardData, setTempCardData] = useState<ICard>(cardData);
     const cardLatestDataRef = useLatest(cardData);
     const latestTempCardDataRef = useLatest(tempCardData);
     useEffect(() => {
@@ -55,9 +55,12 @@ export const Card = memo(
       });
       const handleMouseUp = () => {
         // сетим координаты, только если карточка была сдвинута
-        if (latestTempCardDataRef.current) {
+        if (
+          latestTempCardDataRef.current.left !==
+            cardLatestDataRef.current.left ||
+          latestTempCardDataRef.current.top !== cardLatestDataRef.current.top
+        ) {
           changeCardsArray(latestTempCardDataRef.current);
-          setTempCardData(null);
         }
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
@@ -101,13 +104,15 @@ export const Card = memo(
         textAreaRef.current.scrollHeight,
         MIN_TEXTAREA_HEIGHT
       )}px`;
-    }, [text]);
+    }, [tempCardData.text]);
 
     const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-      changeCardsArray({
-        ...cardData,
-        text: e.target.value,
-      });
+      setTempCardData({ ...cardLatestDataRef.current, text: e.target.value });
+    };
+
+    const handleTextAreaBlur = () => {
+      changeCardsArray(tempCardData);
+      setIsFocused(false);
     };
 
     const actualLeftCoords = tempCardData?.left || left;
@@ -133,8 +138,8 @@ export const Card = memo(
           onMouseMove={(e) => {
             e.stopPropagation();
           }}
-          onBlur={() => setIsFocused(false)}
-          value={text}
+          onBlur={handleTextAreaBlur}
+          value={tempCardData.text}
           style={{ minHeight: MIN_TEXTAREA_HEIGHT }}
           onChange={handleTextareaChange}
         ></textarea>
