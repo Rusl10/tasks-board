@@ -6,45 +6,29 @@ import { ICard } from './types';
 import { init } from './utils/sizeObserver';
 init();
 export const App = () => {
-  const [cards, setCards] = useState(() => [
-    {
-      ...createNewCard(),
-    },
-  ]);
+  const [cards, setCards] = useState(() => [createNewCard()]);
   const onAddNewCard = () => {
-    let newCard;
+    let newCard: ICard;
     do {
       newCard = createNewCard();
     } while (isIntersecting(cards, newCard));
     setCards((prev) => {
-      return [
-        ...prev,
-        {
-          ...newCard,
-        },
-      ];
+      return [...prev, newCard];
     });
   };
 
-  const changeCardsArray = (modifiedCardData: ICard) => {
+  const changeCardsArrayCb = useCallback((modifiedCard: ICard) => {
     setCards((prev) =>
       prev.map((card) => {
-        if (card.id === modifiedCardData.id) {
-          return {
-            ...card,
-            ...modifiedCardData,
-          };
+        if (card.id === modifiedCard.id) {
+          return modifiedCard;
         }
         return card;
       })
     );
-  };
-  // get rid of changeCardsArrayCb, pass changeCardsArray
-  const changeCardsArrayCb = useCallback((modifiedCardData: ICard) => {
-    changeCardsArray(modifiedCardData);
   }, []);
 
-  const onRemoveHandler = useCallback((id) => {
+  const onRemoveHandler = useCallback((id: string) => {
     setCards((prev) => prev.filter((prevItem) => prevItem.id !== id));
   }, []);
 
