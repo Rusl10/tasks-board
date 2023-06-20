@@ -17,8 +17,14 @@
 }
 
 textarea {
-  width: 100%;
+  max-width: 100%;
+  border: none;
+  outline: none;
   overflow: hidden;
+  text-align: center;
   resize: none;
-  /* padding: 0; */
+}
+
+textarea:not(:focus) {
+  pointer-events: none;
 }

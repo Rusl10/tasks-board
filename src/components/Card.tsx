@@ -13,7 +13,7 @@ import './Card.css';
 import { ICard } from '../types';
 import { registerCallback } from '../utils/sizeObserver';
 
-const MIN_TEXTAREA_HEIGHT = 32;
+const MIN_TEXTAREA_HEIGHT = 18;
 
 interface ICardProps {
   onRemoveCard: (id: string) => void;
@@ -114,6 +114,10 @@ export const Card = memo(
       setIsFocused(false);
     };
 
+    const handleDoubleClick = () => {
+      if (!textAreaRef.current) return;
+      textAreaRef.current.focus();
+    };
     const actualLeftCoords = tempCardData?.left || left;
     const actualTopCoords = tempCardData?.top || top;
     return (
@@ -127,9 +131,12 @@ export const Card = memo(
           e.preventDefault();
           onRemoveCard(id);
         }}
+        onDoubleClick={handleDoubleClick}
       >
         <textarea
-          onFocus={() => setIsFocused(true)}
+          onFocus={(e) => {
+            setIsFocused(true);
+          }}
           onMouseDown={(e) => {
             e.stopPropagation();
           }}
@@ -139,7 +146,9 @@ export const Card = memo(
           }}
           onBlur={handleTextAreaBlur}
           value={tempCardData.text}
-          style={{ minHeight: MIN_TEXTAREA_HEIGHT }}
+          style={{
+            minHeight: MIN_TEXTAREA_HEIGHT,
+          }}
           onChange={handleTextareaChange}
         ></textarea>
       </div>
