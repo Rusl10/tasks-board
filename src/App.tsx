@@ -3,8 +3,7 @@ import './App.css';
 import { createNewCard, isIntersecting } from './utils/index';
 import { Card } from './components/Card';
 import { ICard } from './types';
-import { init } from './utils/sizeObserver';
-init();
+
 export const App = () => {
   const [cards, setCards] = useState(() => [createNewCard()]);
   const onAddNewCard = () => {

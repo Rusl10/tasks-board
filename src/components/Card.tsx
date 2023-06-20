@@ -11,7 +11,7 @@ import { useLatest } from '../hooks/useLatest';
 import { rafThrottle } from '../utils/index';
 import './Card.css';
 import { ICard } from '../types';
-import { registerCallback } from '../utils/sizeObserver';
+import { registerResizeObserverCb } from '../utils/sizeObserver';
 
 const MIN_TEXTAREA_HEIGHT = 18;
 
@@ -84,7 +84,7 @@ export const Card = memo(
     useEffect(() => {
       const cardEl = cardRef.current;
       if (!isFocused || !cardEl) return;
-      return registerCallback(cardEl, (entry) => {
+      return registerResizeObserverCb(cardEl, (entry) => {
         setTempCardData({
           ...latestTempCardDataRef.current,
           height: entry.borderBoxSize[0].blockSize,
