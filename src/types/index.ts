@@ -6,3 +6,5 @@ export interface ICard {
   height: number;
   text: string;
 }
+
+export type Point = {x: number; y: number}
