@@ -1,51 +1,66 @@
-import { useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from "react"
+import { Point } from "./types"
 import './App.css';
-import { createNewCard, isIntersecting } from './utils/index';
-import { Card } from './components/Card';
-import { ICard } from './types';
+import { Canvas } from './components/Canvas';
+import { CardsField } from './components/CardsField';
+import useScale from "./hooks/useScale"
+import { useLatest } from "./hooks/useLatest"
+
 
 export const App = () => {
-  const [cards, setCards] = useState(() => [createNewCard()]);
-  const onAddNewCard = () => {
-    let newCard: ICard;
-    do {
-      newCard = createNewCard();
-    } while (isIntersecting(cards, newCard));
-    setCards((prev) => {
-      return [...prev, newCard];
-    });
-  };
-
-  const changeCardsArrayCb = useCallback((modifiedCard: ICard) => {
-    setCards((prev) =>
-      prev.map((card) => {
-        if (card.id === modifiedCard.id) {
-          return modifiedCard;
+  const ref = useRef<HTMLDivElement | null>(null)
+  const [canvasPosition, setCanvasPosition] = useState<Point>({x: 0, y: 0})
+  const scale = useScale(ref)
+  const latestScaleRef = useLatest(scale)
+  useEffect(() => {
+    const prevMousePosition = {
+      x: 0,
+      y: 0
+    };
+    const handleMouseMove = (e: MouseEvent) => {
+      const mouseMovePageX = e.pageX;
+      const mouseMovePageY = e.pageY;
+      const deltaX = mouseMovePageX - prevMousePosition.x;
+      const deltaY = mouseMovePageY - prevMousePosition.y;
+      prevMousePosition.x = mouseMovePageX;
+      prevMousePosition.y = mouseMovePageY;
+      setCanvasPosition(prevPosition => {
+        return {
+          x: prevPosition.x + deltaX / latestScaleRef.current,
+          y: prevPosition.y + deltaY / latestScaleRef.current
         }
-        return card;
       })
-    );
-  }, []);
+    }
+    
+    const handleMouseDown = (e: MouseEvent) => {
+      if(e.button > 0) return;
+      prevMousePosition.x = e.pageX;
+      prevMousePosition.y = e.pageY;
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+    document.addEventListener('mousedown', handleMouseDown)
 
-  const onRemoveHandler = useCallback((id: string) => {
-    setCards((prev) => prev.filter((prevItem) => prevItem.id !== id));
-  }, []);
-
+    return () => {
+      document.removeEventListener('mousedown', handleMouseDown)
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [])
+  
+  // const mousePosRef = useMousePos(ref)
   return (
     <>
-      <button onClick={onAddNewCard}>Добавить карточку</button>
-      <div className="cards-wrapper">
-        {cards.map((cardItem) => {
-          return (
-            <Card
-              key={cardItem.id}
-              cardData={cardItem}
-              onRemoveCard={onRemoveHandler}
-              changeCardsArray={changeCardsArrayCb}
-            />
-          );
-        })}
-      </div>
+      <CardsField />
+      <Canvas 
+        elementRef={ref}
+        canvasPosition={canvasPosition}
+        scale={scale}
+      />
     </>
   );
 };
