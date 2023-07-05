@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { createNewCard, isIntersecting } from '../utils/index';
 import { Card } from './Card';
 import { ICard } from '../types';
-export function CardsField() {
+export function CardsField({canvasPosition}) {
   const [cards, setCards] = useState(() => [createNewCard()]);
   const onAddNewCard = () => {
     let newCard: ICard;
@@ -32,7 +32,11 @@ export function CardsField() {
   return (
     <>
       <button onClick={onAddNewCard}>Добавить карточку</button>
-      <div className="cards-wrapper">
+      <div className="cards-wrapper"
+      style={{
+        transform: `translate(${canvasPosition.x}px, ${canvasPosition.y}px)`,
+      }}
+      >
         {cards.map((cardItem) => {
           return (
             <Card

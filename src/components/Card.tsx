@@ -1,6 +1,7 @@
 // import React from 'react';
 import {
   ChangeEvent,
+  MutableRefObject,
   memo,
   useEffect,
   useLayoutEffect,
@@ -42,8 +43,9 @@ export const Card = memo(
       };
 
       const handleMouseMove = rafThrottle((event: MouseEvent) => {
-        const mouseMovePageX = event.pageX;
-        const mouseMovePageY = event.pageY;
+        const mouseMovePageX = event.clientX;
+        const mouseMovePageY = event.clientY;
+        console.log('event.clientX', event.clientX)
         const calcLeftFromOffset = mouseMovePageX - offset.x;
         const calcTopFromOffset = mouseMovePageY - offset.y;
         const newCardData = {
@@ -132,6 +134,7 @@ export const Card = memo(
           onRemoveCard(id);
         }}
         onDoubleClick={handleDoubleClick}
+        onMouseDown={(e) => {e.stopPropagation()}}
       >
         <textarea
           onFocus={(e) => {

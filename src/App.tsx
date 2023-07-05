@@ -55,7 +55,9 @@ export const App = () => {
   // const mousePosRef = useMousePos(ref)
   return (
     <>
-      <CardsField />
+      <CardsField 
+      canvasPosition={canvasPosition}
+      />
       <Canvas 
         elementRef={ref}
         canvasPosition={canvasPosition}
