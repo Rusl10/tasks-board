@@ -133,7 +133,8 @@ export const Card = memo(
         }}
         onDoubleClick={handleDoubleClick}
         onMouseDown={(e) => {e.stopPropagation()}}
-      >
+        onDragStart={(e) => {e.preventDefault()}}
+>
         <textarea
           onFocus={(e) => {
             setIsFocused(true);
