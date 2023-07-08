@@ -1,7 +1,6 @@
 // import React from 'react';
 import {
   ChangeEvent,
-  MutableRefObject,
   memo,
   useEffect,
   useLayoutEffect,
@@ -11,7 +10,7 @@ import {
 import { useLatest } from '../hooks/useLatest';
 import { rafThrottle } from '../utils/index';
 import './Card.css';
-import { ICard } from '../types';
+import { ICard, Point } from '../types';
 import { registerResizeObserverCb } from '../utils/sizeObserver';
 
 const MIN_TEXTAREA_HEIGHT = 18;
@@ -24,7 +23,6 @@ interface ICardProps {
 
 export const Card = memo(
   ({ onRemoveCard, cardData, changeCardsArray }: ICardProps): JSX.Element => {
-    //console.log('card render')
     const { left, top, id } = cardData;
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const [isFocused, setIsFocused] = useState(false);
@@ -36,24 +34,22 @@ export const Card = memo(
       const cardEl = cardRef.current;
 
       if (!cardEl) return;
-
-      const offset = {
-        x: 0,
-        y: 0,
-      };
+      let prevMouseMosition: Point;
 
       const handleMouseMove = rafThrottle((event: MouseEvent) => {
-        const mouseMovePageX = event.clientX;
-        const mouseMovePageY = event.clientY;
-        console.log('event.clientX', event.clientX)
-        const calcLeftFromOffset = mouseMovePageX - offset.x;
-        const calcTopFromOffset = mouseMovePageY - offset.y;
-        const newCardData = {
-          ...cardLatestDataRef.current,
-          left: calcLeftFromOffset,
-          top: calcTopFromOffset,
-        };
-        setTempCardData(newCardData);
+        const deltaX = event.clientX - prevMouseMosition.x;
+        const deltaY = event.clientY - prevMouseMosition.y;
+        prevMouseMosition = {
+          x: event.clientX,
+          y: event.clientY
+        }
+        setTempCardData(prevCardData => {
+          return {
+            ...prevCardData,
+            top: prevCardData.top + deltaY,
+            left: prevCardData.left + deltaX
+          }
+        });
       });
       const handleMouseUp = () => {
         // сетим координаты, только если карточка была сдвинута
@@ -69,8 +65,10 @@ export const Card = memo(
       };
       const handleMouseDown = (event: MouseEvent) => {
         if (event.button > 0) return;
-        offset.x = event.offsetX;
-        offset.y = event.offsetY;
+        prevMouseMosition = {
+          x: event.clientX,
+          y: event.clientY 
+        }
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
       };
