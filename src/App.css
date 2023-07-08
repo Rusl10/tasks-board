@@ -1,4 +1,6 @@
-#root {}
+#root {
+  overflow: hidden;
+}
 
 .cards-wrapper {
   position: relative;
