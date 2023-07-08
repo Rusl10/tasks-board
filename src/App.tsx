@@ -54,15 +54,15 @@ export const App = () => {
   
   // const mousePosRef = useMousePos(ref)
   return (
-    <>
+    <div ref={ref}>
       <CardsField 
-      canvasPosition={canvasPosition}
-      />
-      <Canvas 
-        elementRef={ref}
         canvasPosition={canvasPosition}
         scale={scale}
       />
-    </>
+      <Canvas 
+        canvasPosition={canvasPosition}
+        scale={scale}
+      />
+    </div>
   );
 };

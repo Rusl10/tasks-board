@@ -6,9 +6,9 @@ type GridBackgroundProps = {
 }
 
 export default function GridBackground({offset, scale}: GridBackgroundProps): JSX.Element {
-  console.log('GridBackground render')
+  // console.log('GridBackground render')
   const inset = `-${(100 / scale - 100) / 2}%`
-  console.log('offset in GridBackground', offset);
+  console.log('canvasPosition in gridBD', offset)
   return (
     <div
       style={{

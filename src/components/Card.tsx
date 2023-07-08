@@ -19,10 +19,11 @@ interface ICardProps {
   onRemoveCard: (id: string) => void;
   cardData: ICard;
   changeCardsArray: (cardData: ICard) => void;
+  scale: number;
 }
 
 export const Card = memo(
-  ({ onRemoveCard, cardData, changeCardsArray }: ICardProps): JSX.Element => {
+  ({ onRemoveCard, cardData, changeCardsArray, scale }: ICardProps): JSX.Element => {
     const { left, top, id } = cardData;
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const [isFocused, setIsFocused] = useState(false);
@@ -30,6 +31,7 @@ export const Card = memo(
     const [tempCardData, setTempCardData] = useState<ICard>(cardData);
     const cardLatestDataRef = useLatest(cardData);
     const latestTempCardDataRef = useLatest(tempCardData);
+    const latestScaleRef = useLatest(scale);
     useEffect(() => {
       const cardEl = cardRef.current;
 
@@ -43,11 +45,12 @@ export const Card = memo(
           x: event.clientX,
           y: event.clientY
         }
+        console.log('scale', latestScaleRef.current)
         setTempCardData(prevCardData => {
           return {
             ...prevCardData,
-            top: prevCardData.top + deltaY,
-            left: prevCardData.left + deltaX
+            top: prevCardData.top + deltaY / latestScaleRef.current,
+            left: prevCardData.left + deltaX / latestScaleRef.current
           }
         });
       });
