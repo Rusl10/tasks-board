@@ -1,17 +1,17 @@
-import { ICard } from '../types';
+import { ICard, Point } from '../types';
 import { nanoid } from 'nanoid';
 
 export const DEFAULT_ELEMENT_SIZE = 150;
-export const MAX_ALLOWED_OFFSET_LEFT = window.innerWidth - DEFAULT_ELEMENT_SIZE;
-export const MAX_ALLOWED_OFFSET_TOP = window.innerHeight - DEFAULT_ELEMENT_SIZE;
 
-export function getRandomInt(max: number) {
-  return Math.floor(Math.random() * max);
+export function getRandomInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export function createNewCard() {
-  const randomOffsetLeft = getRandomInt(MAX_ALLOWED_OFFSET_LEFT);
-  const randomOffsetTop = getRandomInt(MAX_ALLOWED_OFFSET_TOP);
+export function createNewCard(canvasPosition: Point) {
+  const maxLeftOffsetOnScreen = -canvasPosition.x + (window.innerWidth - DEFAULT_ELEMENT_SIZE);
+  const maxTopOffsetOnScreen = -canvasPosition.y + (window.innerHeight - DEFAULT_ELEMENT_SIZE)
+  const randomOffsetLeft = getRandomInt(-canvasPosition.x, maxLeftOffsetOnScreen);
+  const randomOffsetTop = getRandomInt(-canvasPosition.y, maxTopOffsetOnScreen);
   return {
     text: '',
     id: nanoid(),

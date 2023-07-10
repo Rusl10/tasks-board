@@ -4,11 +4,11 @@ import { Card } from './Card';
 import { ICard } from '../types';
 export function CardsField({canvasPosition, scale}) {
   console.log('canvasPosition in cardsField', canvasPosition)
-  const [cards, setCards] = useState(() => [createNewCard()]);
+  const [cards, setCards] = useState(() => [createNewCard(canvasPosition)]);
   const onAddNewCard = () => {
     let newCard: ICard;
     do {
-      newCard = createNewCard();
+      newCard = createNewCard(canvasPosition);
     } while (isIntersecting(cards, newCard));
     setCards((prev) => {
       return [...prev, newCard];
