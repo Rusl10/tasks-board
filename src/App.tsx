@@ -9,9 +9,13 @@ import { useLatest } from "./hooks/useLatest"
 
 export const App = () => {
   const ref = useRef<HTMLDivElement | null>(null)
-  const [canvasPosition, setCanvasPosition] = useState<Point>({x: 0, y: 0})
-  const scale = useScale(ref)
+  const [canvasPosition, setCanvasPosition] = useState<Point>({x: 0, y: 0});
+  const [newCardPoint, setNewCardPoint] = useState<Point | null>(null);
+  const [isNewCardMode, setIsNewCardMode] = useState(false);
+  const scale = useScale(ref);
   const latestScaleRef = useLatest(scale)
+  const latestIsNewCardModeRef = useLatest(isNewCardMode)
+  const latestCanvasPositionRef = useLatest(canvasPosition)
   useEffect(() => {
     const prevMousePosition = {
       x: 0,
@@ -33,11 +37,18 @@ export const App = () => {
     }
     
     const handleMouseDown = (e: MouseEvent) => {
-      if(e.button > 0) return;
-      prevMousePosition.x = e.pageX;
-      prevMousePosition.y = e.pageY;
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      if(latestIsNewCardModeRef.current) {
+        setNewCardPoint({
+          x: -latestCanvasPositionRef.current.x + e.clientX,
+          y: -latestCanvasPositionRef.current.y + e.clientY
+        })
+        setIsNewCardMode(false);
+      } else if(e.button === 0) {
+        prevMousePosition.x = e.pageX;
+        prevMousePosition.y = e.pageY;
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+      }
     }
     const handleMouseUp = () => {
       document.removeEventListener('mousemove', handleMouseMove)
@@ -53,11 +64,18 @@ export const App = () => {
   }, [])
   
   // const mousePosRef = useMousePos(ref)
+  const buttonText = isNewCardMode ? 'Отменить' : 'Добавить карточку'
   return (
     <div ref={ref}>
+      <button onMouseDown={(e) => {
+        e.stopPropagation();
+        console.log('setIsNewCardMode');
+        setIsNewCardMode(!isNewCardMode)
+      }}>{buttonText}</button>
       <CardsField 
         canvasPosition={canvasPosition}
         scale={scale}
+        newCardPoint={newCardPoint}
       />
       <Canvas 
         canvasPosition={canvasPosition}

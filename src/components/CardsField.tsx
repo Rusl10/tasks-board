@@ -1,19 +1,26 @@
-import { useState, useCallback } from 'react';
-import { createNewCard, isIntersecting } from '../utils/index';
+import { useState, useCallback, useLayoutEffect } from 'react';
+import { DEFAULT_ELEMENT_SIZE, createInitialCard } from '../utils/index';
 import { Card } from './Card';
 import { ICard } from '../types';
-export function CardsField({canvasPosition, scale}) {
-  console.log('canvasPosition in cardsField', canvasPosition)
-  const [cards, setCards] = useState(() => [createNewCard(canvasPosition)]);
-  const onAddNewCard = () => {
-    let newCard: ICard;
-    do {
-      newCard = createNewCard(canvasPosition);
-    } while (isIntersecting(cards, newCard));
+import { nanoid } from 'nanoid';
+export function CardsField({canvasPosition, scale, newCardPoint}) {
+  // console.log('canvasPosition in cardsField', canvasPosition)
+  const [cards, setCards] = useState(() => [createInitialCard()]);
+
+  useLayoutEffect(() => {
+    if(!newCardPoint) return;
+    const newCard: ICard = {
+      text: '',
+      id: nanoid(),
+      left: newCardPoint.x - DEFAULT_ELEMENT_SIZE / 2,
+      top: newCardPoint.y - DEFAULT_ELEMENT_SIZE / 2,
+      height: DEFAULT_ELEMENT_SIZE,
+      width: DEFAULT_ELEMENT_SIZE,
+    };
     setCards((prev) => {
       return [...prev, newCard];
     });
-  };
+  }, [newCardPoint])
 
   const changeCardsArrayCb = useCallback((modifiedCard: ICard) => {
     setCards((prev) =>
@@ -32,7 +39,6 @@ export function CardsField({canvasPosition, scale}) {
 
   return (
     <>
-      <button onClick={onAddNewCard}>Добавить карточку</button>
       <div className="cards-wrapper"
       style={{
         transform: `translate(${canvasPosition.x}px, ${canvasPosition.y}px) scale(${scale})`,
