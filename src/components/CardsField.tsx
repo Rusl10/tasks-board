@@ -12,6 +12,8 @@ export function CardsField({canvasPosition, scale, newCardPoint}) {
     const newCard: ICard = {
       text: '',
       id: nanoid(),
+      // left: newCardPoint.x - DEFAULT_ELEMENT_SIZE * scale / 2,
+      // top: newCardPoint.y - DEFAULT_ELEMENT_SIZE * scale / 2,
       left: newCardPoint.x - DEFAULT_ELEMENT_SIZE / 2,
       top: newCardPoint.y - DEFAULT_ELEMENT_SIZE / 2,
       height: DEFAULT_ELEMENT_SIZE,

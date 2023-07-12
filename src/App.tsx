@@ -38,6 +38,7 @@ export const App = () => {
     
     const handleMouseDown = (e: MouseEvent) => {
       if(latestIsNewCardModeRef.current) {
+        console.log('-latestCanvasPositionRef.current.x + e.clientX', -latestCanvasPositionRef.current.x + e.clientX)
         setNewCardPoint({
           x: -latestCanvasPositionRef.current.x + e.clientX,
           y: -latestCanvasPositionRef.current.y + e.clientY
