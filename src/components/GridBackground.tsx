@@ -14,7 +14,7 @@ export default function GridBackground({offset, scale}: GridBackgroundProps): JS
       style={{
         backgroundImage: 'url(https://example-use-pan.vercel.app/assets/grid-10dccd16.svg)',
         transform: `scale(${scale})`,
-        backgroundPosition: `${offset.x}px ${offset.y}px`,
+        backgroundPosition: `${offset.x / scale}px ${offset.y / scale}px`,
         position: 'absolute',
         inset,
       }}

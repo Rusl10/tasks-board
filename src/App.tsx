@@ -13,7 +13,6 @@ export const App = () => {
   const [newCardPoint, setNewCardPoint] = useState<Point | null>(null);
   const [isNewCardMode, setIsNewCardMode] = useState(false);
   const scale = useScale(ref);
-  const latestScaleRef = useLatest(scale)
   const latestIsNewCardModeRef = useLatest(isNewCardMode)
   const latestCanvasPositionRef = useLatest(canvasPosition)
   useEffect(() => {
@@ -30,8 +29,8 @@ export const App = () => {
       prevMousePosition.y = mouseMovePageY;
       setCanvasPosition(prevPosition => {
         return {
-          x: prevPosition.x + deltaX / latestScaleRef.current,
-          y: prevPosition.y + deltaY / latestScaleRef.current
+          x: prevPosition.x + deltaX,
+          y: prevPosition.y + deltaY
         }
       })
     }
