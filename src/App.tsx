@@ -14,7 +14,6 @@ export const App = () => {
   const ref = useRef<HTMLDivElement | null>(null)
   const [canvasPosition, setCanvasPosition] = useState<Point>({x: 0, y: 0});
   const [cards, setCards] = useState(() => [createInitialCard()]);
-  // const [newCardPoint, setNewCardPoint] = useState<Point | null>(null);
   const [isNewCardMode, setIsNewCardMode] = useState(false);
   const scale = useScale(ref);
   const latestIsNewCardModeRef = useLatest(isNewCardMode)
@@ -40,8 +39,8 @@ export const App = () => {
     }
     
     const handleMouseDown = (e: MouseEvent) => {
+      if(e.button > 0) return;
       if(latestIsNewCardModeRef.current) {
-        // console.log('-latestCanvasPositionRef.current.x + e.clientX', -latestCanvasPositionRef.current.x + e.clientX)
         const newCard: ICard = {
           text: '',
           id: nanoid(),
@@ -53,12 +52,8 @@ export const App = () => {
         setCards((prev) => {
           return [...prev, newCard];
         });
-        // setNewCardPoint({
-        //   x: ,
-        //   y: 
-        // })
         setIsNewCardMode(false);
-      } else if(e.button === 0) {
+      } else {
         prevMousePosition.x = e.pageX;
         prevMousePosition.y = e.pageY;
         document.addEventListener('mousemove', handleMouseMove);
