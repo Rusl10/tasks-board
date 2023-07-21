@@ -15,7 +15,7 @@ export const App = () => {
   const [canvasPosition, setCanvasPosition] = useState<Point>({x: 0, y: 0});
   const [cards, setCards] = useState(() => [createInitialCard()]);
   const [isNewCardMode, setIsNewCardMode] = useState(false);
-  const scale = useScale(ref);
+  const {scale, mousePosOnScale} = useScale(ref);
   const latestIsNewCardModeRef = useLatest(isNewCardMode)
   const latestCanvasPositionRef = useLatest(canvasPosition)
   useEffect(() => {
@@ -86,7 +86,25 @@ export const App = () => {
   const onRemoveHandler = useCallback((id: string) => {
     setCards((prev) => prev.filter((prevItem) => prevItem.id !== id));
   }, []);
-  // const mousePosRef = useMousePos(ref)
+
+  // TODO учитывать позицию мышки только при зум событии
+  const mousePosRef = useRef<Point>({x: 0, y: 0})
+  useEffect(() => {
+    // if (!mousePosRef.current) return;
+    const handleMouseMove = (e: MouseEvent) => {
+      console.log('e.button', e.buttons);
+      mousePosRef.current.x = e.pageX * 100 / window.innerWidth;
+      mousePosRef.current.y = e.pageY * 100 / window.innerHeight;
+      // mousePosRef.current = {
+      //   x: e.pageX,
+      //   y: e.pageY
+      // }
+    }
+    document.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+    }
+  },[])
   const buttonText = isNewCardMode ? 'Отменить' : 'Добавить карточку'
   return (
     <div ref={ref}>
@@ -101,10 +119,12 @@ export const App = () => {
         cards={cards}
         changeCardsArrayCb={changeCardsArrayCb}
         onRemoveHandler={onRemoveHandler}
+        mousePos={mousePosOnScale}
       />
       <Canvas 
         canvasPosition={canvasPosition}
         scale={scale}
+        mousePos={mousePosOnScale}
       />
     </div>
   );
