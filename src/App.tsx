@@ -25,6 +25,7 @@ export const App = () => {
   const [isNewCardMode, setIsNewCardMode] = useState(false);
   const latestIsNewCardModeRef = useLatest(isNewCardMode);
   const latestCanvasPositionRef = useLatest(canvasPosition);
+  const latestScaleRef = useLatest(scale);
   useEffect(() => {
     const prevMousePosition = {
       x: 0,
@@ -48,16 +49,18 @@ export const App = () => {
     const handleMouseDown = (e: MouseEvent) => {
       if (e.button > 0) return;
       if (latestIsNewCardModeRef.current) {
+        const distanceByX = e.clientX - latestCanvasPositionRef.current.x;
+        const distanceByY = e.clientY - latestCanvasPositionRef.current.y;
+        const scaledDistanceByX = distanceByX / latestScaleRef.current;
+        const scaledDistanceByY = distanceByY / latestScaleRef.current;
         const newCard: ICard = {
           text: '',
           id: nanoid(),
           left:
-            -latestCanvasPositionRef.current.x +
-            e.clientX -
+            scaledDistanceByX -
             DEFAULT_ELEMENT_SIZE / 2,
           top:
-            -latestCanvasPositionRef.current.y +
-            e.clientY -
+            scaledDistanceByY -
             DEFAULT_ELEMENT_SIZE / 2,
           height: DEFAULT_ELEMENT_SIZE,
           width: DEFAULT_ELEMENT_SIZE,
