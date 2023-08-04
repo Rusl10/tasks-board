@@ -1,4 +1,3 @@
-// import React from 'react';
 import {
   ChangeEvent,
   memo,
@@ -9,21 +8,26 @@ import {
 } from 'react';
 import { useLatest } from '../hooks/useLatest';
 import { rafThrottle } from '../utils/index';
-import './Card.css';
 import { ICard, Point } from '../types';
 import { registerResizeObserverCb } from '../utils/sizeObserver';
+import './Card.css';
 
 const MIN_TEXTAREA_HEIGHT = 18;
 
 interface ICardProps {
-  onRemoveCard: (id: string) => void;
   cardData: ICard;
-  changeCardsArray: (cardData: ICard) => void;
   scale: number;
+  onRemoveCard: (id: string) => void;
+  changeCardsArray: (cardData: ICard) => void;
 }
 
 export const Card = memo(
-  ({ onRemoveCard, cardData, changeCardsArray, scale }: ICardProps): JSX.Element => {
+  ({
+    onRemoveCard,
+    cardData,
+    changeCardsArray,
+    scale,
+  }: ICardProps): JSX.Element => {
     const { left, top, id } = cardData;
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const [isFocused, setIsFocused] = useState(false);
@@ -43,15 +47,15 @@ export const Card = memo(
         const deltaY = event.clientY - prevMouseMosition.y;
         prevMouseMosition = {
           x: event.clientX,
-          y: event.clientY
-        }
-        console.log('scale', latestScaleRef.current)
-        setTempCardData(prevCardData => {
+          y: event.clientY,
+        };
+
+        setTempCardData((prevCardData) => {
           return {
             ...prevCardData,
             top: prevCardData.top + deltaY / latestScaleRef.current,
-            left: prevCardData.left + deltaX / latestScaleRef.current
-          }
+            left: prevCardData.left + deltaX / latestScaleRef.current,
+          };
         });
       });
       const handleMouseUp = () => {
@@ -70,8 +74,8 @@ export const Card = memo(
         if (event.button > 0) return;
         prevMouseMosition = {
           x: event.clientX,
-          y: event.clientY 
-        }
+          y: event.clientY,
+        };
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
       };
@@ -135,11 +139,15 @@ export const Card = memo(
           onRemoveCard(id);
         }}
         onDoubleClick={handleDoubleClick}
-        onMouseDown={(e) => {e.stopPropagation()}}
-        onDragStart={(e) => {e.preventDefault()}}
->
+        onMouseDown={(e) => {
+          e.stopPropagation();
+        }}
+        onDragStart={(e) => {
+          e.preventDefault();
+        }}
+      >
         <textarea
-          onFocus={(e) => {
+          onFocus={() => {
             setIsFocused(true);
           }}
           onMouseDown={(e) => {

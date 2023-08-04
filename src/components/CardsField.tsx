@@ -1,31 +1,39 @@
-
+import { ICard, Point } from '../types';
 import { Card } from './Card';
-export function CardsField({canvasPosition, scale, cards, onRemoveHandler, changeCardsArrayCb, mousePos}) {
-  // console.log('canvasPosition in cardsField', canvasPosition)
-  const clientXInPercent = mousePos.x * 100 / window.innerWidth;
-  const clientYInPercent = mousePos.y * 100 / window.innerHeight;
+
+interface ICardsFieldProps {
+  canvasPosition: Point;
+  scale: number;
+  cards: ICard[];
+  onRemoveHandler: (id: string) => void;
+  changeCardsArrayCb: (card: ICard) => void;
+}
+
+export function CardsField({
+  canvasPosition,
+  scale,
+  cards,
+  onRemoveHandler,
+  changeCardsArrayCb,
+}: ICardsFieldProps) {
   return (
-    <>
-      <div className="cards-wrapper"
+    <div
+      className="cards-wrapper"
       style={{
-        //  применяется также и к транслейту, возникают лишние смещения при перетаскивании
-        // transformOrigin: `${mousePos.x}% ${mousePos.y}%`,
-        transformOrigin: `${clientXInPercent}% ${clientYInPercent}%`,
         transform: `translate(${canvasPosition.x}px, ${canvasPosition.y}px) scale(${scale})`,
       }}
-      >
-        {cards.map((cardItem) => {
-          return (
-            <Card
-              key={cardItem.id}
-              cardData={cardItem}
-              onRemoveCard={onRemoveHandler}
-              changeCardsArray={changeCardsArrayCb}
-              scale={scale}
-            />
-          );
-        })}
-      </div>
-    </>
+    >
+      {cards.map((cardItem) => {
+        return (
+          <Card
+            key={cardItem.id}
+            cardData={cardItem}
+            onRemoveCard={onRemoveHandler}
+            changeCardsArray={changeCardsArrayCb}
+            scale={scale}
+          />
+        );
+      })}
+    </div>
   );
 }
