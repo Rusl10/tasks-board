@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Point } from './types';
-import { Canvas } from './components/Canvas';
 import { CardsField } from './components/CardsField';
+import { CanvasBackground } from './components/CanvasBackground';
 import { useLatest } from './hooks/useLatest';
 import { createInitialCard, DEFAULT_ELEMENT_SIZE } from './utils/index';
 import { ICard } from './types/index';
@@ -136,7 +136,7 @@ export const App = () => {
   const buttonText = isNewCardMode ? 'Отменить' : 'Добавить карточку';
 
   return (
-    <div ref={ref}>
+    <div ref={ref} style={{ position: 'relative' }}>
       <button
         onMouseDown={(e) => {
           e.stopPropagation();
@@ -152,7 +152,7 @@ export const App = () => {
         changeCardsArrayCb={changeCardsArrayCb}
         onRemoveHandler={onRemoveHandler}
       />
-      <Canvas canvasPosition={canvasPosition} scale={scale} />
+      <CanvasBackground canvasPosition={canvasPosition} scale={scale} />
     </div>
   );
 };
