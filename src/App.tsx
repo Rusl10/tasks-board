@@ -8,36 +8,35 @@ import { ICard } from './types/index';
 import { nanoid } from 'nanoid';
 import './App.css';
 
-type ScaleOpts = {
-  direction: 'up' | 'down';
-  interval: number;
-  mousePos: Point;
-};
-
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 3;
+const SCALE_INTERVAL = 0.1;
 
 export const App = () => {
   const ref = useRef<HTMLDivElement | null>(null);
+
   const [canvasPosition, setCanvasPosition] = useState<Point>({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
   const [cards, setCards] = useState(() => [createInitialCard()]);
   const [isNewCardMode, setIsNewCardMode] = useState(false);
-  const latestIsNewCardModeRef = useLatest(isNewCardMode);
-  const latestCanvasPositionRef = useLatest(canvasPosition);
-  const latestScaleRef = useLatest(scale);
+
+  const latestIsNewCardMode = useLatest(isNewCardMode);
+  const latestCanvasPosition = useLatest(canvasPosition);
+  const latestScale = useLatest(scale);
+
   useEffect(() => {
     const prevMousePosition = {
       x: 0,
       y: 0,
     };
+
     const handleMouseMove = (e: MouseEvent) => {
-      const mouseMovePageX = e.pageX;
-      const mouseMovePageY = e.pageY;
-      const deltaX = mouseMovePageX - prevMousePosition.x;
-      const deltaY = mouseMovePageY - prevMousePosition.y;
-      prevMousePosition.x = mouseMovePageX;
-      prevMousePosition.y = mouseMovePageY;
+      const mouseMoveClientX = e.clientX;
+      const mouseMoveClientY = e.clientY;
+      const deltaX = mouseMoveClientX - prevMousePosition.x;
+      const deltaY = mouseMoveClientY - prevMousePosition.y;
+      prevMousePosition.x = mouseMoveClientX;
+      prevMousePosition.y = mouseMoveClientY;
       setCanvasPosition((prevPosition) => {
         return {
           x: prevPosition.x + deltaX,
@@ -48,20 +47,17 @@ export const App = () => {
 
     const handleMouseDown = (e: MouseEvent) => {
       if (e.button > 0) return;
-      if (latestIsNewCardModeRef.current) {
-        const distanceByX = e.clientX - latestCanvasPositionRef.current.x;
-        const distanceByY = e.clientY - latestCanvasPositionRef.current.y;
-        const scaledDistanceByX = distanceByX / latestScaleRef.current;
-        const scaledDistanceByY = distanceByY / latestScaleRef.current;
+
+      if (latestIsNewCardMode.current) {
+        const distanceByX = e.clientX - latestCanvasPosition.current.x;
+        const distanceByY = e.clientY - latestCanvasPosition.current.y;
+        const scaledDistanceByX = distanceByX / latestScale.current;
+        const scaledDistanceByY = distanceByY / latestScale.current;
         const newCard: ICard = {
           text: '',
           id: nanoid(),
-          left:
-            scaledDistanceByX -
-            DEFAULT_ELEMENT_SIZE / 2,
-          top:
-            scaledDistanceByY -
-            DEFAULT_ELEMENT_SIZE / 2,
+          left: scaledDistanceByX - DEFAULT_ELEMENT_SIZE / 2,
+          top: scaledDistanceByY - DEFAULT_ELEMENT_SIZE / 2,
           height: DEFAULT_ELEMENT_SIZE,
           width: DEFAULT_ELEMENT_SIZE,
         };
@@ -70,76 +66,58 @@ export const App = () => {
         });
         setIsNewCardMode(false);
       } else {
-        prevMousePosition.x = e.pageX;
-        prevMousePosition.y = e.pageY;
+        prevMousePosition.x = e.clientX;
+        prevMousePosition.y = e.clientY;
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
       }
     };
+
     const handleMouseUp = () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
 
-    const updateScale = ({ direction, interval, mousePos }: ScaleOpts) => {
-      console.log('updateScale canvasPosition', canvasPosition);
-      const changeCanvPosOnScale = (scale, currentScale) => {
-        const distanceByX = mousePos.x - latestCanvasPositionRef.current.x;
-        const distanceByY = mousePos.y - latestCanvasPositionRef.current.y;
-        const scaledDistanceByX = (distanceByX / currentScale) * scale;
-        const scaledDistanceByY = (distanceByY / currentScale) * scale;
-        console.log('scaledDistanceByX', scaledDistanceByX);
-        console.log('scaledDistanceByY', scaledDistanceByY);
-        setCanvasPosition({
-          x: mousePos.x - scaledDistanceByX,
-          y: mousePos.y - scaledDistanceByY,
-        });
-      };
-      setScale((currentScale) => {
-        let scale: number;
-
-        if (direction === 'up' && currentScale + interval < MAX_SCALE) {
-          scale = currentScale + interval;
-          changeCanvPosOnScale(scale, currentScale);
-        } else if (direction === 'up') {
-          scale = MAX_SCALE;
-          changeCanvPosOnScale(scale, currentScale);
-        } else if (
-          direction === 'down' &&
-          currentScale - interval > MIN_SCALE
-        ) {
-          scale = currentScale - interval;
-          changeCanvPosOnScale(scale, currentScale);
-        } else if (direction === 'down') {
-          scale = MIN_SCALE;
-          changeCanvPosOnScale(scale, currentScale);
-        } else {
-          scale = currentScale;
-        }
-
-        return scale;
-      });
-    };
-    const handleWheelEvent = (e: WheelEvent) => {
-      updateScale({
-        direction: e.deltaY > 0 ? 'down' : 'up',
-        interval: 0.1,
-        mousePos: {
-          x: e.pageX,
-          y: e.pageY,
-        },
-      });
-    };
     document.addEventListener('mousedown', handleMouseDown);
-    document.addEventListener('wheel', handleWheelEvent);
 
     return () => {
       document.removeEventListener('mousedown', handleMouseDown);
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleWheelEvent = (e: WheelEvent) => {
+      const direction = e.deltaY > 0 ? 'down' : 'up';
+      const currentScale = latestScale.current;
+
+      let newScale: number =
+        direction === 'up'
+          ? currentScale + SCALE_INTERVAL
+          : currentScale - SCALE_INTERVAL;
+      newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, newScale));
+
+      const distanceByX = e.clientX - latestCanvasPosition.current.x;
+      const distanceByY = e.clientY - latestCanvasPosition.current.y;
+
+      const scaledDistanceByX = (distanceByX / currentScale) * newScale;
+      const scaledDistanceByY = (distanceByY / currentScale) * newScale;
+
+      setScale(newScale);
+      setCanvasPosition({
+        x: e.clientX - scaledDistanceByX,
+        y: e.clientY - scaledDistanceByY,
+      });
+    };
+
+    document.addEventListener('wheel', handleWheelEvent);
+
+    return () => {
       document.removeEventListener('wheel', handleWheelEvent);
     };
   }, []);
+
   const changeCardsArrayCb = useCallback((modifiedCard: ICard) => {
     setCards((prev) =>
       prev.map((card) => {
@@ -154,7 +132,9 @@ export const App = () => {
   const onRemoveHandler = useCallback((id: string) => {
     setCards((prev) => prev.filter((prevItem) => prevItem.id !== id));
   }, []);
+
   const buttonText = isNewCardMode ? 'Отменить' : 'Добавить карточку';
+
   return (
     <div ref={ref}>
       <button
