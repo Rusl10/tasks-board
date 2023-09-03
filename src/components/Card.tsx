@@ -1,4 +1,3 @@
-// import React from 'react';
 import {
   ChangeEvent,
   memo,
@@ -9,17 +8,17 @@ import {
 } from 'react';
 import { useLatest } from '../hooks/useLatest';
 import { rafThrottle } from '../utils/index';
-import './Card.css';
 import { ICard, Point } from '../types';
 import { registerResizeObserverCb } from '../utils/sizeObserver';
+import './Card.css';
 
 const MIN_TEXTAREA_HEIGHT = 18;
 
 interface ICardProps {
-  onRemoveCard: (id: string) => void;
   cardData: ICard;
-  changeCardsArray: (cardData: ICard) => void;
   scale: number;
+  changeCardsArray: (cardData: ICard) => void;
+  onRemoveCard: (id: string) => void;
 }
 
 export const Card = memo(function Card({
@@ -28,42 +27,66 @@ export const Card = memo(function Card({
   changeCardsArray,
   scale,
 }: ICardProps): JSX.Element {
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [isFocused, setIsFocused] = useState(false);
+  // почему пишем null а не cardData как раньше, посмотреть запись созвона
+  const [tempCardData, setTempCardData] = useState<ICard | null>(null);
+
+  const latestCardData = useLatest(cardData);
+  const latestTempCardData = useLatest(tempCardData);
+  const latestScale = useLatest(scale);
+  const latestIsFocused = useLatest(isFocused);
+
   const cardRef = useRef<HTMLDivElement | null>(null);
-  const [tempCardData, setTempCardData] = useState<ICard>(cardData);
-  const cardLatestDataRef = useLatest(cardData);
-  const latestTempCardDataRef = useLatest(tempCardData);
-  const latestScaleRef = useLatest(scale);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const textAreaEl = textAreaRef.current;
+    if (!textAreaEl) return;
+    const handleMouseDown = (e) => {
+      console.log('tx e listener');
+      e.stopPropagation();
+    };
+
+    textAreaEl.addEventListener('mousedown', handleMouseDown);
+    return () => {
+      textAreaEl.removeEventListener('mousedown', handleMouseDown);
+    };
+  }, []);
+
   useEffect(() => {
     const cardEl = cardRef.current;
 
     if (!cardEl) return;
+
     let prevMouseMosition: Point;
 
     const handleMouseMove = rafThrottle((event: MouseEvent) => {
+      const tempCardData = latestTempCardData.current;
+
+      if (!tempCardData) return;
+
       const deltaX = event.clientX - prevMouseMosition.x;
       const deltaY = event.clientY - prevMouseMosition.y;
+
       prevMouseMosition = {
         x: event.clientX,
         y: event.clientY,
       };
-      console.log('scale', latestScaleRef.current);
-      setTempCardData((prevCardData) => {
-        return {
-          ...prevCardData,
-          top: prevCardData.top + deltaY / latestScaleRef.current,
-          left: prevCardData.left + deltaX / latestScaleRef.current,
-        };
+
+      setTempCardData({
+        ...tempCardData,
+        top: tempCardData.top + deltaY / latestScale.current,
+        left: tempCardData.left + deltaX / latestScale.current,
       });
     });
     const handleMouseUp = () => {
       // сетим координаты, только если карточка была сдвинута
       if (
-        latestTempCardDataRef.current.left !== cardLatestDataRef.current.left ||
-        latestTempCardDataRef.current.top !== cardLatestDataRef.current.top
+        latestTempCardData.current &&
+        (latestTempCardData.current.left !== latestCardData.current.left ||
+          latestTempCardData.current.top !== latestCardData.current.top)
       ) {
-        changeCardsArray(latestTempCardDataRef.current);
+        changeCardsArray(latestTempCardData.current);
       }
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
@@ -74,6 +97,8 @@ export const Card = memo(function Card({
         x: event.clientX,
         y: event.clientY,
       };
+
+      setTempCardData(latestTempCardData.current || latestCardData.current);
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
     };
@@ -88,10 +113,16 @@ export const Card = memo(function Card({
 
   useEffect(() => {
     const cardEl = cardRef.current;
+
     if (!isFocused || !cardEl) return;
+
     return registerResizeObserverCb(cardEl, (entry) => {
+      const tempCardData = latestTempCardData.current;
+
+      if (!tempCardData) return;
+
       setTempCardData({
-        ...latestTempCardDataRef.current,
+        ...tempCardData,
         height: entry.borderBoxSize[0].blockSize,
       });
     });
@@ -100,28 +131,34 @@ export const Card = memo(function Card({
   useLayoutEffect(() => {
     if (!textAreaRef.current) return;
     textAreaRef.current.style.height = 'inherit';
-
     textAreaRef.current.style.height = `${Math.max(
       textAreaRef.current.scrollHeight,
       MIN_TEXTAREA_HEIGHT
     )}px`;
-  }, [tempCardData.text]);
+  }, [tempCardData, cardData]);
 
   const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    if (!tempCardData) return;
+
     setTempCardData({
-      ...latestTempCardDataRef.current,
+      ...tempCardData,
       text: e.target.value,
     });
   };
 
   const handleTextAreaBlur = () => {
-    changeCardsArray(latestTempCardDataRef.current);
+    console.log('handleTextAreaBlur handler');
+    if (!tempCardData) return;
+
+    setTempCardData(null);
+    changeCardsArray(tempCardData);
     setIsFocused(false);
   };
 
   const handleDoubleClick = () => {
     if (!textAreaRef.current) return;
     textAreaRef.current.focus();
+    setTempCardData(cardData);
   };
 
   const actualCard = tempCardData || cardData;
@@ -139,6 +176,7 @@ export const Card = memo(function Card({
       }}
       onDoubleClick={handleDoubleClick}
       onMouseDown={(e) => {
+        console.log('onMouseDown card jsx');
         e.stopPropagation();
       }}
       onDragStart={(e) => {
@@ -149,18 +187,15 @@ export const Card = memo(function Card({
         onFocus={(e) => {
           setIsFocused(true);
         }}
-        onMouseDown={(e) => {
-          e.stopPropagation();
-        }}
         ref={textAreaRef}
         onMouseMove={(e) => {
           e.stopPropagation();
         }}
-        onBlur={handleTextAreaBlur}
-        value={actualCard.text}
         style={{
           minHeight: MIN_TEXTAREA_HEIGHT,
         }}
+        onBlur={handleTextAreaBlur}
+        value={actualCard.text}
         onChange={handleTextareaChange}
       ></textarea>
     </div>

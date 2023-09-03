@@ -20,7 +20,6 @@ export function CardsField({
     <div
       className="cards-wrapper"
       style={{
-        transformOrigin: '0px 0px',
         transform: `translate(${canvasPosition.x}px, ${canvasPosition.y}px) scale(${scale})`,
       }}
     >
