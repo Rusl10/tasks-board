@@ -28,13 +28,11 @@ export const Card = memo(function Card({
   scale,
 }: ICardProps): JSX.Element {
   const [isFocused, setIsFocused] = useState(false);
-  // почему пишем null а не cardData как раньше, посмотреть запись созвона
   const [tempCardData, setTempCardData] = useState<ICard | null>(null);
 
   const latestCardData = useLatest(cardData);
   const latestTempCardData = useLatest(tempCardData);
   const latestScale = useLatest(scale);
-  const latestIsFocused = useLatest(isFocused);
 
   const cardRef = useRef<HTMLDivElement | null>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -80,7 +78,6 @@ export const Card = memo(function Card({
       });
     });
     const handleMouseUp = () => {
-      // сетим координаты, только если карточка была сдвинута
       if (
         latestTempCardData.current &&
         (latestTempCardData.current.left !== latestCardData.current.left ||
