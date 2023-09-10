@@ -32,6 +32,7 @@ export const Card = memo(function Card({
 
   const cardRef = useRef<HTMLDivElement | null>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const isDragging = useRef(false);
 
   const latestCardData = useLatest(cardData);
   const latestTempCardData = useLatest(tempCardData);
@@ -40,7 +41,7 @@ export const Card = memo(function Card({
   useEffect(() => {
     const textAreaEl = textAreaRef.current;
     if (!textAreaEl) return;
-    const handleMouseDown = (e) => {
+    const handleMouseDown = (e: MouseEvent) => {
       e.stopPropagation();
     };
 
@@ -84,6 +85,7 @@ export const Card = memo(function Card({
       ) {
         changeCardsArray(latestTempCardData.current);
       }
+      isDragging.current = false;
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
@@ -93,7 +95,7 @@ export const Card = memo(function Card({
         x: event.clientX,
         y: event.clientY,
       };
-
+      isDragging.current = true;
       setTempCardData(latestTempCardData.current || latestCardData.current);
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
@@ -146,7 +148,9 @@ export const Card = memo(function Card({
   const handleTextAreaBlur = () => {
     if (!tempCardData) return;
 
-    setTempCardData(null);
+    if (!isDragging.current) {
+      setTempCardData(null);
+    }
     changeCardsArray(tempCardData);
     setIsFocused(false);
   };
