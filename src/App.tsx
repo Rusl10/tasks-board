@@ -13,12 +13,12 @@ const MAX_SCALE = 3;
 const SCALE_INTERVAL = 0.1;
 
 export const App = () => {
-  const ref = useRef<HTMLDivElement | null>(null);
-
   const [canvasPosition, setCanvasPosition] = useState<Point>({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
   const [cards, setCards] = useState(() => [createInitialCard()]);
   const [isNewCardMode, setIsNewCardMode] = useState(false);
+
+  const ref = useRef<HTMLDivElement | null>(null);
 
   const latestIsNewCardMode = useLatest(isNewCardMode);
   const latestCanvasPosition = useLatest(canvasPosition);
@@ -29,7 +29,6 @@ export const App = () => {
       x: 0,
       y: 0,
     };
-
     const handleMouseMove = (e: MouseEvent) => {
       const mouseMoveClientX = e.clientX;
       const mouseMoveClientY = e.clientY;
@@ -37,6 +36,7 @@ export const App = () => {
       const deltaY = mouseMoveClientY - prevMousePosition.y;
       prevMousePosition.x = mouseMoveClientX;
       prevMousePosition.y = mouseMoveClientY;
+
       setCanvasPosition((prevPosition) => {
         return {
           x: prevPosition.x + deltaX,
@@ -133,7 +133,7 @@ export const App = () => {
     setCards((prev) => prev.filter((prevItem) => prevItem.id !== id));
   }, []);
 
-  const buttonText = isNewCardMode ? 'Отменить' : 'Добавить карточку';
+  const buttonText = isNewCardMode ? 'Cancel' : 'Add a new card';
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>

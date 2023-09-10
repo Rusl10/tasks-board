@@ -1,5 +1,6 @@
 import { ICard, Point } from '../types';
 import { Card } from './Card';
+import './CardsField.css';
 
 interface ICardsFieldProps {
   canvasPosition: Point;

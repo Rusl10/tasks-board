@@ -19,13 +19,10 @@ export function registerResizeObserverCb(
     observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const maybeCallBacks = callBackMap.get(entry.target);
-        /**
-         * This is defensive code, but it's possible that get returns undefined
-         */
-        /* c8 ignore next */
         const safeCallBacks = maybeCallBacks ?? [];
 
         if (safeCallBacks.length === 0) return;
+
         requestAnimationFrame(() => {
           for (const callback of safeCallBacks) {
             if (typeof callback === 'function') {
@@ -46,10 +43,6 @@ export function registerResizeObserverCb(
   return () => {
     if (observer) {
       const maybeCallBacks = callBackMap.get(node);
-      /**
-       * This is defensive code, but it's possible that get returns undefined
-       */
-      /* c8 ignore next */
       const safeCallBacks = maybeCallBacks ?? [];
       const newCallbacks = safeCallBacks.filter((ref) => ref !== cb);
 

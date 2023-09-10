@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 
 export const DEFAULT_ELEMENT_SIZE = 150;
 
-export function getRandomInt(max: number) {
+function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
 
@@ -11,6 +11,7 @@ export function createInitialCard() {
   const maxTopOffsetOnScreen = window.innerHeight - DEFAULT_ELEMENT_SIZE;
   const randomOffsetLeft = getRandomInt(maxLeftOffsetOnScreen);
   const randomOffsetTop = getRandomInt(maxTopOffsetOnScreen);
+
   return {
     text: '',
     id: nanoid(),

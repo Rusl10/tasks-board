@@ -30,18 +30,17 @@ export const Card = memo(function Card({
   const [isFocused, setIsFocused] = useState(false);
   const [tempCardData, setTempCardData] = useState<ICard | null>(null);
 
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
   const latestCardData = useLatest(cardData);
   const latestTempCardData = useLatest(tempCardData);
   const latestScale = useLatest(scale);
-
-  const cardRef = useRef<HTMLDivElement | null>(null);
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     const textAreaEl = textAreaRef.current;
     if (!textAreaEl) return;
     const handleMouseDown = (e) => {
-      console.log('tx e listener');
       e.stopPropagation();
     };
 
@@ -127,6 +126,7 @@ export const Card = memo(function Card({
 
   useLayoutEffect(() => {
     if (!textAreaRef.current) return;
+
     textAreaRef.current.style.height = 'inherit';
     textAreaRef.current.style.height = `${Math.max(
       textAreaRef.current.scrollHeight,
@@ -144,7 +144,6 @@ export const Card = memo(function Card({
   };
 
   const handleTextAreaBlur = () => {
-    console.log('handleTextAreaBlur handler');
     if (!tempCardData) return;
 
     setTempCardData(null);
@@ -154,6 +153,7 @@ export const Card = memo(function Card({
 
   const handleDoubleClick = () => {
     if (!textAreaRef.current) return;
+
     textAreaRef.current.focus();
     setTempCardData(cardData);
   };
@@ -173,7 +173,6 @@ export const Card = memo(function Card({
       }}
       onDoubleClick={handleDoubleClick}
       onMouseDown={(e) => {
-        console.log('onMouseDown card jsx');
         e.stopPropagation();
       }}
       onDragStart={(e) => {
