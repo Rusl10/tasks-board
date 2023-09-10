@@ -27,4 +27,7 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
   left: 50%;
+  transform: translateX(-50%);
+  bottom: 15px;
+  min-width: 155px;
 }

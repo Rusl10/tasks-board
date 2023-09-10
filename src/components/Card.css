@@ -7,13 +7,14 @@
   justify-content: center;
   padding: 15px;
   word-break: break-word;
-  border: 2px solid grey;
   color: black;
-  border-radius: 10px;
+  border-radius: 3px;
   position: absolute;
   z-index: 1;
   box-sizing: border-box;
   user-select: none;
+  background: #f2e5a1;
+  box-shadow: 0px 4px 8px 0px rgba(34, 60, 80, 0.2);
 }
 
 textarea {
@@ -23,6 +24,7 @@ textarea {
   overflow: hidden;
   text-align: center;
   resize: none;
+  background-color: transparent;
 }
 
 textarea:not(:focus) {
