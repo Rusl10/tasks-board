@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Point } from './types';
 import { CardsField } from './components/CardsField';
 import { CanvasBackground } from './components/CanvasBackground';
@@ -17,8 +17,6 @@ export const App = () => {
   const [scale, setScale] = useState(1);
   const [cards, setCards] = useState(() => [createInitialCard()]);
   const [isNewCardMode, setIsNewCardMode] = useState(false);
-
-  const ref = useRef<HTMLDivElement | null>(null);
 
   const latestIsNewCardMode = useLatest(isNewCardMode);
   const latestCanvasPosition = useLatest(canvasPosition);
@@ -136,7 +134,7 @@ export const App = () => {
   const buttonText = isNewCardMode ? 'Cancel' : 'Add a new card';
 
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
+    <div style={{ position: 'relative' }}>
       <button
         onMouseDown={(e) => {
           e.stopPropagation();
